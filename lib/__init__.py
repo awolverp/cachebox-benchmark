@@ -96,4 +96,13 @@ def get_benchmark(name: str):
                 )
             )
 
+    if name == "Cache":
+        benchmarks.append(
+            CacheBenchmark(
+                dict,
+                methods=_original_methods,
+                name="Python dictionary"
+            )
+        )
+
     return MultiBenchmark(*benchmarks)

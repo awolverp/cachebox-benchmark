@@ -20,18 +20,19 @@ If you know other library, tell me to add it to this page.
 
 ### Cache 
 
-| Operation\Class | cachebox.Cache | cachetools.Cache |
-| --------------- | -------------- | ---------------- |
-| clear           | 1.23ms/0.1KB   | 4.52ms/0.8KB     |
-| delete          | 1.05ms/0.1KB   | 0.92ms/0.1KB     |
-| get             | 0.79ms/0.1KB   | 0.66ms/0.1KB     |
-| insert          | 0.83ms/23.8KB  | 1.49ms/69.0KB    |
-| pop             | 0.70ms/0.1KB   | 1.10ms/0.1KB     |
-| popitem         | 0.00ms/0.0KB   | 1.66ms/0.2KB     |
-| setdefault      | 0.72ms/23.8KB  | 1.78ms/69.0KB    |
-| update          | 0.30ms/69.2KB  | 1.13ms/116.6KB   |
+| Operation\Class | cachebox.Cache | cachetools.Cache | Python dictionary |
+| --------------- | -------------- | ---------------- | ----------------- |
+| clear           | 0.70ms/0.1KB   | 6.73ms/0.8KB     | 1.04ms/0.1KB      |
+| delete          | 0.82ms/0.1KB   | 1.84ms/0.1KB     | 1.44ms/0.1KB      |
+| get             | 0.77ms/0.1KB   | 1.11ms/0.1KB     | 1.12ms/0.1KB      |
+| insert          | 0.81ms/23.8KB  | 2.65ms/69.0KB    | 1.22ms/69.0KB     |
+| pop             | 0.70ms/0.1KB   | 1.79ms/0.1KB     | 1.04ms/0.1KB      |
+| popitem         | 0.00ms/0.0KB   | 1.98ms/0.2KB     | 1.06ms/0.1KB      |
+| setdefault      | 0.72ms/23.8KB  | 3.00ms/69.0KB    | 1.07ms/69.0KB     |
+| update          | 0.44ms/69.2KB  | 1.81ms/116.6KB   | 0.28ms/97.6KB     |
 
 - 🥇 `cachebox.Cache`
+- 🥇 `dict` (Python dictionary)
 - 🥈 `cachetools.Cache`
 
 ### FIFOCache 
