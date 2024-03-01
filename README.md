@@ -1,6 +1,6 @@
 # Caching libraries Benchmarks
 According to my new library [cachebox](https://github.com/awolverp/cachebox), I decided to benchmark caching libraries
-i know, to show my library power ...
+I know, to show power of my library ...
 
 **Qualification criteria is:**
 - Needs to support minimum 2 alghoritms
@@ -102,19 +102,20 @@ If you know other library, tell me to add it to this page.
 
 ### RRCache 
 
-| Operation\Class | cachebox.RRCache | cachetools.RRCache |
-| --------------- | ---------------- | ------------------ |
-| clear           | 8.91ms/0.1KB     | 81.23ms/8.3KB      |
-| delete          | 0.80ms/0.1KB     | 0.91ms/0.1KB       |
-| get             | 0.75ms/0.1KB     | 0.62ms/0.1KB       |
-| insert          | 17.03ms/32.1KB   | 98.60ms/179.6KB    |
-| pop             | 0.89ms/0.1KB     | 1.06ms/0.1KB       |
-| popitem         | 1.22ms/0.1KB     | 6.12ms/8.3KB       |
-| setdefault      | 14.91ms/32.1KB   | 94.46ms/179.6KB    |
-| update          | 13.45ms/1135.1KB | 87.44ms/754.3KB    |
+| Operation\Class | cachebox.RRCache | cachetools.RRCache | cacheing.RandomCache |
+| --------------- | ---------------- | ------------------ | -------------------- |
+| clear           | 9.44ms/0.1KB     | 73.50ms/8.3KB      | 42.08ms/5.2KB        |
+| delete          | 0.79ms/0.1KB     | 0.91ms/0.1KB       | 1.50ms/5.1KB         |
+| get             | 0.74ms/0.1KB     | 0.63ms/0.1KB       | 0.61ms/0.1KB         |
+| insert          | 15.20ms/32.0KB   | 89.44ms/179.6KB    | 43.61ms/285.9KB      |
+| pop             | 0.70ms/0.1KB     | 1.08ms/0.1KB       | 1.62ms/5.1KB         |
+| popitem         | 1.04ms/0.1KB     | 5.56ms/8.3KB       | 2.64ms/5.2KB         |
+| setdefault      | 14.31ms/32.1KB   | 91.87ms/179.6KB    | 62.98ms/286.6KB      |
+| update          | 11.10ms/1135.1KB | 85.15ms/754.8KB    | 36.56ms/860.6KB      |
 
 - 🥇 `cachebox.RRCache`
-- 🥈 `cachetools.RRCache`
+- 🥈 `cacheing.RandomCache`
+- 🥉 `cachetools.RRCache`
 
 ### TTLCache 
 

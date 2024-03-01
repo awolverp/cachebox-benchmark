@@ -47,6 +47,9 @@ def get_benchmark(name: str):
         if name == "TTLCacheNoDefault" and module == "cacheing":
             name = "VTTLCache"
 
+        elif name == "RRCache" and module == "cacheing":
+            name = "RandomCache"
+
         try:
             class_t = getattr(module_t, name)
         except AttributeError:
