@@ -40,10 +40,12 @@ class Benchmark:
                 method(obj, n_range)
             except NotImplementedError:
                 self._results[name] = (0.0, 0.0)
+                tracemalloc.stop()
                 return
         
             perf = time.perf_counter() - perf
             _, peak = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
         
         else:
             tracemalloc.start()
@@ -54,6 +56,7 @@ class Benchmark:
                     method(obj, n)
                 except NotImplementedError:
                     self._results[name] = (0.0, 0.0)
+                    tracemalloc.stop()
                     return
                 
                 except KeyError:
@@ -62,6 +65,7 @@ class Benchmark:
         
             perf = time.perf_counter() - perf
             _, peak = tracemalloc.get_traced_memory()
+            tracemalloc.stop()
 
         self._results[name] = (perf * 1000, peak/10**3)
 
