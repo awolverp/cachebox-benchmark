@@ -1,22 +1,3 @@
-# Caching libraries Benchmarks
-According to my new library [cachebox](https://github.com/awolverp/cachebox), I decided to benchmark caching libraries
-i know, to show my library power ...
-
-**Qualification criteria is:**
-- Needs to support minimum 2 alghoritms
-- Runs on Python3.8+
-
-If you know other library, tell me to add it to this page.
-
-> [!IMPORTANT]\
-> The system on which the benchmarks are done: **Linux x86_64, 8G, Intel i3-1115G4**
-
-## Benchmarks:
-**Versions**:
-- cachebox version: 1.0.21
-- cachetools version: 5.3.2
-- cacheing version: 0.1.1
-
 
 ### Cache 
 
@@ -27,12 +8,9 @@ If you know other library, tell me to add it to this page.
 | get             | 0.77ms/24.7KB  | 0.59ms/82.4KB    |
 | insert          | 0.76ms/24.7KB  | 1.42ms/82.4KB    |
 | pop             | 0.70ms/25.1KB  | 1.09ms/82.8KB    |
-| popitem         |                | 1.57ms/83.1KB    |
+| popitem         | 0.00ms/0.0KB   | 1.57ms/83.1KB    |
 | setdefault      | 0.68ms/25.9KB  | 1.52ms/83.1KB    |
 | update          | 0.27ms/70.8KB  | 1.06ms/130.9KB   |
-
-- 🥇 `cachebox.Cache`
-- 🥈 `cachetools.Cache`
 
 ### FIFOCache 
 
@@ -47,9 +25,6 @@ If you know other library, tell me to add it to this page.
 | setdefault      | 9.39ms/832.5KB     | 43.69ms/1207.9KB     |
 | update          | 6.34ms/1207.9KB    | 39.53ms/1207.9KB     |
 
-- 🥇 `cachebox.FIFOCache`
-- 🥈 `cachetools.FIFOCache`
-
 ### LFUCache 
 
 | Operation\Class | cachebox.LFUCache | cachetools.LFUCache | cacheing.LFUCache |
@@ -62,10 +37,6 @@ If you know other library, tell me to add it to this page.
 | popitem         | 3.63ms/1207.9KB   | 30.03ms/1211.4KB    | 1.22ms/1211.4KB   |
 | setdefault      | 43.00ms/1207.9KB  | 524.22ms/1211.4KB   | 46.30ms/1211.4KB  |
 | update          | 39.85ms/1211.4KB  | 520.70ms/1211.4KB   | 17.59ms/1818.4KB  |
-
-
-- 🥇 `cachebox.LFUCache` and `cacheing.LFUCache` ( they are very similar )
-- 🥈 `cachetools.LFUCache`
 
 ### LRUCache 
 
@@ -80,10 +51,6 @@ If you know other library, tell me to add it to this page.
 | setdefault      | 8.94ms/1818.4KB   | 49.29ms/1818.4KB    | 53.73ms/1818.4KB  |
 | update          | 5.85ms/1818.4KB   | 44.28ms/1818.4KB    | 15.62ms/1818.4KB  |
 
-- 🥇 `cachebox.LRUCache`
-- 🥈 `cacheing.LRUCache`
-- 🥉 `cachetools.LRUCache`
-
 ### MRUCache 
 
 | Operation\Class | cachebox.MRUCache | cachetools.MRUCache |
@@ -96,9 +63,6 @@ If you know other library, tell me to add it to this page.
 | popitem         | 0.76ms/1818.4KB   | 1.79ms/1818.4KB     |
 | setdefault      | 9.09ms/1818.4KB   | 46.78ms/1818.4KB    |
 | update          | 5.92ms/1818.4KB   | 41.34ms/1818.4KB    |
-
-- 🥇 `cachebox.MRUCache`
-- 🥈 `cachetools.MRUCache`
 
 ### RRCache 
 
@@ -113,9 +77,6 @@ If you know other library, tell me to add it to this page.
 | setdefault      | 13.46ms/1818.4KB | 97.24ms/1818.4KB   |
 | update          | 12.30ms/1818.4KB | 91.32ms/1818.4KB   |
 
-- 🥇 `cachebox.RRCache`
-- 🥈 `cachetools.RRCache`
-
 ### TTLCache 
 
 | Operation\Class | cachebox.TTLCache | cachetools.TTLCache | cacheing.TTLCache |
@@ -128,10 +89,6 @@ If you know other library, tell me to add it to this page.
 | popitem         | 0.81ms/1818.4KB   | 6.53ms/1818.4KB     | 1.46ms/3868.0KB   |
 | setdefault      | 10.32ms/1818.4KB  | 156.38ms/1818.4KB   | 150.07ms/5285.1KB |
 | update          | 7.07ms/1818.4KB   | 115.73ms/1818.4KB   | 65.88ms/7170.2KB  |
-
-- 🥇 `cachebox.TTLCache`
-- 🥈 `cacheing.TTLCache`
-- 🥉 `cachetools.TTLCache`
 
 ### TTLCacheNoDefault 
 
@@ -146,29 +103,3 @@ If you know other library, tell me to add it to this page.
 | setdefault      | 480.64ms/7350.5KB          | 13129.20ms/8107.6KB |
 | update          | 6.24ms/7726.8KB            | 12606.31ms/8107.6KB |
 
-- 🥇 `cachebox.TTLCacheNoDefault`
-- 🥈 `cacheing.VTTLCache`
-
-> [!TIP]\
-> According to this benchmark, In `cachebox.TTLCacheNoDefault` if you want to insert several values in a time, use `update` instead of `insert` or `__setitem__`.
-
-## Run yourself
-1. Download source from here.
-```sh
-git clone https://github.com/awolverp/cachebox-benchmark
-cd cachebox-benchmark
-```
-
-2. Install/Upgrade requirements:
-```sh
-pip3 install -r -U requirements.txt
-```
-
-3. You can run benchmark using `make` script or manually:
-```sh
-# Make:
-make
-
-# Manually:
-python3 main.py Cache FIFOCache LFUCache LRUCache MRUCache RRCache TTLCache TTLCacheNoDefault
-```

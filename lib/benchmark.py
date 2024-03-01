@@ -26,7 +26,7 @@ class Benchmark:
         obj = self.cache(**self.kwargs)
         method = self.methods[name]
 
-        n_range = self._n_range if not name.startswith(("pop", "delete", "popitem")) else 1000
+        n_range = self._n_range if not name.startswith(("pop", "delete", "popitem", "get")) else 1000
 
         if isinstance(method, tuple):
             setup, method = method

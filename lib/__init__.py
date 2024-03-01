@@ -8,6 +8,7 @@ from importlib import import_module
 _original_methods = {
     "clear": (lambda obj, size: obj.update((i, i) for i in range(size)), lambda obj, n: obj.clear()),
     "delete": (lambda obj, size: obj.update((i, i) for i in range(size)), lambda obj, n: obj.__delitem__(n)),
+    "get": (lambda obj, size: obj.update((i, i) for i in range(size)), lambda obj, n: obj.__getitem__(n)),
     "insert": lambda obj, n: obj.__setitem__(n, n),
     "pop": (lambda obj, size: obj.update((i, i) for i in range(size)), lambda obj, n: obj.pop(n, None)),
     "popitem": (lambda obj, size: obj.update((i, i) for i in range(size)), lambda obj, n: obj.popitem()),
@@ -17,6 +18,7 @@ _original_methods = {
 _vttl_methods = {
     "clear": (lambda obj, size: obj.update(((i, 2), i) for i in range(size)), lambda obj, n: obj.clear()),
     "delete": (lambda obj, size: obj.update(((i, 2), i) for i in range(size)), lambda obj, n: obj.__delitem__(n)),
+    "get": (lambda obj, size: obj.update(((i, 2), i) for i in range(size)), lambda obj, n: obj.__getitem__(n)),
     "insert": lambda obj, n: obj.__setitem__((n, n or 1), n),
     "pop": (lambda obj, size: obj.update(((i, 2), i) for i in range(size)), lambda obj, n: obj.pop(n, None)),
     "popitem": (lambda obj, size: obj.update(((i, 2), i) for i in range(size)), lambda obj, n: obj.popitem()),
@@ -26,6 +28,7 @@ _vttl_methods = {
 _ttlnodefault_methods = {
     "clear": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.clear()),
     "delete": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.__delitem__(n)),
+    "get": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.__getitem__(n)),
     "insert": lambda obj, n: obj.insert(n, n, n or 1),
     "pop": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.pop(n, None)),
     "popitem": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.popitem()),
