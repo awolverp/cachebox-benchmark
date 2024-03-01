@@ -1,7 +1,10 @@
 # Caching libraries Benchmarks
+According to my new library [cachebox](https://github.com/awolverp/cachebox), i decided to benchmark caching libraries
+i know, to show my library power ...
+
 **Qualification criteria is:**
 - Needs to support minimum 2 alghoritms
-- Runs on Python3.8
+- Runs on Python3.8+
 
 If you know other library, tell me to add to this page.
 
@@ -9,124 +12,128 @@ If you know other library, tell me to add to this page.
 > The system on which the benchmarks are done: **Linux x86_64, 8G, Intel i3-1115G4**
 
 ## Benchmarks:
-
 **Versions**:
-- cachebox version: 1.0.0
+- cachebox version: 1.0.21
 - cachetools version: 5.3.2
-
-### Cache
-| operation\class         | cachetools.Cache(1000)  | cachebox.Cache(1000)    |
-| ----------------------- | ------------------ | ------------------ |
-| clear                   | 0.986ms / 0.728KB  | 0.033ms / 0.0KB    |
-| delete                  | 0.488ms / 0.144KB  | 0.252ms / 0.128KB  |
-| insert (1000 items)     | 1.033ms / 69.048KB | 0.247ms / 23.824KB |
-| pop                     | 0.641ms / 0.144KB  | 0.264ms / 0.128KB  |
-| popitem                 | 1.149ms / 0.184KB  | not implemented    |
-| setdefault (1000 items) | 5.595ms / 49.348KB | 5.150ms / 29.364KB |
-| update (1000 items)     | 1.112ms / 69.408KB | 0.272ms / 24.184KB |
+- cacheing version: 0.1.1
 
 
-### FIFOCache
-| operation\class         | cachetools.FIFOCache(1000)| cachebox.FIFOCache(1000)|
-| ----------------------- | -------------------- | ------------------ |
-| clear                   | 0.909ms / 0.803KB    | 0.031ms / 0.0KB    |
-| delete                  | 0.602ms / 0.144KB    | 0.248ms / 0.128KB  |
-| insert (10000 items)    | 37.510ms / 318.4KB   | 3.281ms / 32.08KB  |
-| pop                     | 0.751ms / 0.144KB    | 0.320ms / 0.128KB  |
-| popitem                 | 1.076ms / 0.192KB    | 0.296ms / 0.128KB  |
-| setdefault (10000 items)| 52.665ms / 170.4KB   | 49.751ms / 48.048KB|
-| update (10000 items)    | 39.526ms / 318.76KB  | 5.714ms / 760.184KB|
+### Cache 
 
+| Operation\Class | cachebox.Cache | cachetools.Cache |
+| --------------- | -------------- | ---------------- |
+| clear           | 0.83ms/0.1KB   | 4.36ms/81.9KB    |
+| delete          | 0.88ms/24.5KB  | 0.91ms/82.1KB    |
+| insert          | 0.77ms/24.5KB  | 1.43ms/82.1KB    |
+| pop             | 0.70ms/24.9KB  | 1.07ms/82.6KB    |
+| popitem         | 0.00ms/0.0KB   | 1.57ms/82.8KB    |
+| setdefault      | 0.70ms/25.5KB  | 1.52ms/82.8KB    |
+| update          | 0.29ms/70.6KB  | 1.05ms/130.7KB   |
 
-### LFUCache
-| operation\class         | cachetools.LFUCache(1000) | cachebox.LFUCache(1000) |
-| ----------------------- | -------------------- | ------------------ |
-| clear                   | 28.280ms / 0.898KB   | 0.031ms / 0.0KB    |
-| delete                  | 1.180ms / 0.216KB    | 0.273ms / 0.128KB  |
-| insert (10000 items)    | 509.691ms / 253.312KB| 35.511ms / 23.856KB|
-| pop                     | 1.648ms / 0.216KB    | 0.282ms / 0.128KB  |
-| popitem                 | 29.073ms / 0.4KB     | 3.056ms / 0.128KB  |
-| setdefault (10000 items)| 60.283ms / 152.192KB | 50.914ms / 47.408KB|
-| update (10000 items)    | 500.150ms / 253.672KB| 38.764ms / 760.184KB|
+### FIFOCache 
 
+| Operation\Class | cachebox.FIFOCache | cachetools.FIFOCache |
+| --------------- | ------------------ | -------------------- |
+| clear           | 8.04ms/832.1KB     | 39.95ms/1208.2KB     |
+| delete          | 0.83ms/832.1KB     | 1.03ms/1208.2KB      |
+| insert          | 10.24ms/832.1KB    | 43.89ms/1208.2KB     |
+| pop             | 0.69ms/832.1KB     | 1.19ms/1208.2KB      |
+| popitem         | 0.78ms/832.1KB     | 1.59ms/1208.2KB      |
+| setdefault      | 8.91ms/832.1KB     | 43.98ms/1208.2KB     |
+| update          | 6.09ms/1208.2KB    | 38.72ms/1208.2KB     |
 
-### LRUCache
-| operation\class         | cachetools.LRUCache(1000) | cachebox.LRUCache(1000) |
-| ----------------------- | -------------------- | ------------------ |
-| clear                   | 1.090ms / 0.802KB    | 0.030ms / 0.0KB    |
-| delete                  | 0.609ms / 0.144KB    | 0.268ms / 0.128KB  |
-| insert (10000 items)    | 37.679ms / 318.376KB | 3.451ms / 32.08KB  |
-| pop                     | 0.948ms / 0.144KB    | 0.450ms / 0.128KB  |
-| popitem                 | 1.261ms / 0.192KB    | 0.459ms / 0.128KB  |
-| setdefault (10000 items)| 54.138ms / 169.96KB  | 51.069ms / 47.984KB|
-| update (10000 items)    | 38.840ms / 318.736KB | 5.992ms / 760.184KB|
+### LFUCache 
 
+| Operation\Class | cachebox.LFUCache | cachetools.LFUCache | cacheing.LFUCache |
+| --------------- | ----------------- | ------------------- | ----------------- |
+| clear           | 8.02ms/1208.2KB   | 185.07ms/1212.9KB   | 29.77ms/1212.9KB  |
+| delete          | 0.84ms/1208.2KB   | 2.49ms/1212.9KB     | 1.09ms/1212.9KB   |
+| insert          | 43.55ms/1208.2KB  | 1349.47ms/1212.9KB  | 22.03ms/1212.9KB  |
+| pop             | 0.69ms/1208.2KB   | 2.15ms/1212.9KB     | 1.75ms/1212.9KB   |
+| popitem         | 3.55ms/1208.2KB   | 29.33ms/1212.9KB    | 1.30ms/1212.9KB   |
+| setdefault      | 42.44ms/1208.2KB  | 504.67ms/1212.9KB   | 48.40ms/1212.9KB  |
+| update          | 38.78ms/1212.9KB  | 494.83ms/1212.9KB   | 17.00ms/1658.6KB  |
 
-### MRUCache
-| operation\class         | cachetools.MRUCache(1000) | cachebox.MRUCache(1000) |
-| ----------------------- | -------------------- | ------------------ |
-| clear                   | 1.105ms / 0.802KB    | 0.031ms / 0.0KB    |
-| delete                  | 0.630ms / 0.144KB    | 0.488ms / 0.128KB  |
-| insert (10000 items)    | 39.594ms / 318.376KB | 3.408ms / 23.856KB |
-| pop                     | 0.992ms / 0.144KB    | 0.505ms / 0.128KB  |
-| popitem                 | 1.897ms / 0.192KB    | 0.308ms / 0.128KB  |
-| setdefault (10000 items)| 55.141ms / 170.184KB | 51.317ms / 47.504KB|
-| update (10000 items)    | 41.258ms / 318.736KB | 6.031ms / 760.184KB|
+### LRUCache 
 
+| Operation\Class | cachebox.LRUCache | cachetools.LRUCache | cacheing.LRUCache |
+| --------------- | ----------------- | ------------------- | ----------------- |
+| clear           | 8.02ms/1658.6KB   | 39.31ms/1658.6KB    | 32.06ms/1658.6KB  |
+| delete          | 0.82ms/1658.6KB   | 1.03ms/1658.6KB     | 0.99ms/1658.6KB   |
+| insert          | 9.98ms/1658.6KB   | 45.73ms/1658.6KB    | 19.72ms/1658.6KB  |
+| pop             | 0.69ms/1658.6KB   | 1.39ms/1658.6KB     | 1.22ms/1658.6KB   |
+| popitem         | 0.75ms/1658.6KB   | 1.78ms/1658.6KB     | 1.10ms/1658.6KB   |
+| setdefault      | 8.95ms/1658.6KB   | 45.26ms/1658.6KB    | 52.73ms/1658.6KB  |
+| update          | 5.79ms/1658.6KB   | 39.44ms/1658.6KB    | 15.79ms/1658.6KB  |
 
-### RRCache
-| operation\class         | cachetools.RRCache(1000) | cachebox.RRCache(1000) |
-| ----------------------- | -------------------- | ------------------ |
-| clear                   | 4.879ms / 8.216KB    | 0.031ms / 0.0KB    |
-| delete                  | 0.480ms / 0.144KB    | 0.253ms / 0.128KB  |
-| insert (10000 items)    | 83.215ms / 179.568KB | 8.653ms / 32.08KB  |
-| pop                     | 0.635ms / 0.144KB    | 0.262ms / 0.128KB  |
-| popitem                 | 5.102ms / 8.264KB    | 0.625ms / 0.128KB  |
-| setdefault (10000 items)| 51.305ms / 87.896KB  | 49.541ms / 48.464KB|
-| update (10000 items)    | 83.815ms / 179.928KB | 10.763ms / 760.18KB|
+### MRUCache 
 
+| Operation\Class | cachebox.MRUCache | cachetools.MRUCache |
+| --------------- | ----------------- | ------------------- |
+| clear           | 8.08ms/1658.6KB   | 39.53ms/1658.6KB    |
+| delete          | 1.05ms/1658.6KB   | 1.04ms/1658.6KB     |
+| insert          | 9.86ms/1658.6KB   | 46.51ms/1658.6KB    |
+| pop             | 0.91ms/1658.6KB   | 1.42ms/1658.6KB     |
+| popitem         | 0.77ms/1658.6KB   | 1.77ms/1658.6KB     |
+| setdefault      | 8.76ms/1658.6KB   | 52.65ms/1658.6KB    |
+| update          | 5.72ms/1658.6KB   | 40.44ms/1658.6KB    |
 
-### TTLCache
-| operation\class         | cachetools.TTLCache(1000) | cachebox.TTLCache(1000) |
-| ----------------------- | -------------------- | ------------------ |
-| clear                   | 4.111ms / 0.882KB    | 0.030ms / 0.0KB    |
-| delete                  | 1.035ms / 0.144KB    | 0.289ms / 0.128KB  |
-| expire (1000 items)     | 1.727ms / 0.064KB    | 0.332ms / 0.0KB    |
-| insert (10000 items)    | 98.520ms / 406.656KB | 4.162ms / 32.08KB  |
-| pop                     | 3.185ms / 0.24KB     | 0.294ms / 0.128KB  |
-| popitem                 | 4.390ms / 0.304KB    | 0.340ms / 0.128KB  |
-| setdefault (10000 items)| 79.153ms / 258.312KB | 50.547ms / 47.472KB|
-| update (10000 items)    | 99.515ms / 407.016KB | 8.109ms / 760.184KB|
+### RRCache 
 
+| Operation\Class | cachebox.RRCache | cachetools.RRCache |
+| --------------- | ---------------- | ------------------ |
+| clear           | 8.13ms/1658.6KB  | 75.05ms/1658.6KB   |
+| delete          | 0.84ms/1658.6KB  | 0.94ms/1658.6KB    |
+| insert          | 14.79ms/1658.6KB | 93.17ms/1658.6KB   |
+| pop             | 0.70ms/1658.6KB  | 1.06ms/1658.6KB    |
+| popitem         | 1.09ms/1658.6KB  | 5.87ms/1658.6KB    |
+| setdefault      | 13.71ms/1658.6KB | 92.13ms/1658.6KB   |
+| update          | 11.80ms/1658.6KB | 87.23ms/1658.6KB   |
 
-### TTLCacheNoDefault
-| operation\class         | cachebox.TTLCacheNoDefault  |
-| ----------------------- | --------------------------- |
-| clear                   | 0.030ms / 0.0KB             |
-| delete                  | 0.313ms / 0.128KB           |
-| expire (1000 items)     | 0.224ms / 0.0KB             |
-| insert (10000 items)    | 263.789ms / 32.152KB        |
-| pop                     | 0.323ms / 0.128KB           |
-| popitem                 | 0.343ms / 0.128KB           |
-| setdefault (10000 items)| 60.743ms / 48.336KB         |
-| update (10000 items)    | 5.667ms / 760.184KB         |
+### TTLCache 
+
+| Operation\Class | cachebox.TTLCache | cachetools.TTLCache | cacheing.TTLCache |
+| --------------- | ----------------- | ------------------- | ----------------- |
+| clear           | 8.25ms/1658.6KB   | 73.55ms/1658.6KB    | 41.72ms/1976.4KB  |
+| delete          | 0.92ms/1658.6KB   | 1.63ms/1658.6KB     | 2.32ms/2001.3KB   |
+| insert          | 15.80ms/1658.6KB  | 120.09ms/1658.6KB   | 74.64ms/3568.1KB  |
+| pop             | 1.22ms/1658.6KB   | 5.23ms/1658.6KB     | 3.84ms/3593.4KB   |
+| popitem         | 1.44ms/1658.6KB   | 5.99ms/1658.6KB     | 1.30ms/3745.3KB   |
+| setdefault      | 13.96ms/1658.6KB  | 151.74ms/1658.6KB   | 151.67ms/5162.3KB |
+| update          | 6.96ms/1658.6KB   | 119.57ms/1658.6KB   | 67.23ms/7047.6KB  |
+
+### TTLCacheNoDefault 
+
+| Operation\Class | cachebox.TTLCacheNoDefault | cacheing.VTTLCache |
+| --------------- | -------------------------- | ------------------ |
+| clear           | 8.57ms/7227.7KB            | 50.28ms/8357.2KB   |
+| delete          | 1.32ms/7227.7KB            | 2.58ms/8357.2KB    |
+| insert          | 454.86ms/7227.7KB          | 12737.40ms/8357.2KB |
+| pop             | 1.29ms/7227.7KB            | 4.09ms/8357.2KB    |
+| popitem         | 1.37ms/7227.7KB            | 1.59ms/8357.2KB    |
+| setdefault      | 501.72ms/7227.7KB          | 13350.88ms/8357.2KB |
+| update          | 6.74ms/7603.8KB            | 12751.64ms/8357.2KB |
 
 > [!TIP]\
-> If you want to insert several values in same time, use `update` instead of `insert` or `__setitem__`.
+> According to this benchmark, In `cachebox.TTLCacheNoDefault` if you want to insert several values in a time, use `update` instead of `insert` or `__setitem__`.
 
 ## Run yourself
 1. Download source from here.
 ```sh
-git clone https://github.com/awolverp/cachebox
-cd cachebox
+git clone https://github.com/awolverp/cachebox-benchmark
+cd cachebox-benchmark
 ```
 
 2. Install/Upgrade requirements:
 ```sh
-pip3 install -U cachetools cachebox
+pip3 install -r -U requirements.txt
 ```
 
-3. Run
+3. You can run benchmark using `make` script or manually:
 ```sh
-python3 benchmarks # or `make bench`
+# Make:
+make
+
+# Manually:
+python3 main.py Cache FIFOCache LFUCache LRUCache MRUCache RRCache TTLCache TTLCacheNoDefault
 ```
