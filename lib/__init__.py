@@ -25,7 +25,7 @@ _vttl_methods = {
     "setdefault": lambda obj, n: obj.setdefault((n, 2), n),
     "update": lambda obj, n: obj.update({(i, 2):i for i in range(n)}),
 }
-_ttlnodefault_methods = {
+_vttl2_methods = {
     "clear": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.clear()),
     "delete": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.__delitem__(n)),
     "get": (lambda obj, size: obj.update(((i, i) for i in range(size)), 2), lambda obj, n: obj.__getitem__(n)),
@@ -43,11 +43,8 @@ def get_benchmark(name: str):
 
     for module in ["cachebox", "cachetools", "cacheing"]:
         module_t = import_module(module)
-        
-        if name == "TTLCacheNoDefault" and module == "cacheing":
-            name = "VTTLCache"
 
-        elif name == "RRCache" and module == "cacheing":
+        if name == "RRCache" and module == "cacheing":
             name = "RandomCache"
 
         try:
@@ -73,16 +70,7 @@ def get_benchmark(name: str):
             benchmarks.append(
                 Benchmark(
                     class_t,
-                    _vttl_methods,
-                    kwargs=kwargs
-                )
-            )
-        
-        elif name == "TTLCacheNoDefault":
-            benchmarks.append(
-                Benchmark(
-                    class_t,
-                    _ttlnodefault_methods,
+                    _vttl_methods if module == "cacheing" else _vttl2_methods,
                     kwargs=kwargs
                 )
             )

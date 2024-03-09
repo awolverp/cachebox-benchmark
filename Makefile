@@ -15,4 +15,4 @@ clean:
 
 .PHONY: run
 run:
-	@python3 main.py Cache FIFOCache LFUCache LRUCache MRUCache RRCache TTLCache TTLCacheNoDefault
+	@python3 main.py Cache FIFOCache LFUCache LRUCache RRCache TTLCache VTTLCache
