@@ -71,7 +71,7 @@ class Benchmark:
 
     def compile(self):
         for methodname in self.methods.keys():
-            time.sleep(0.2)
+            time.sleep(0.5)
             self._call_method(methodname)
 
 

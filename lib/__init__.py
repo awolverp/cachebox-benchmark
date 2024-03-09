@@ -50,7 +50,7 @@ def get_benchmark(name: str):
         try:
             class_t = getattr(module_t, name)
         except AttributeError:
-            print("> NOTE: {!r} module doesn't have {!r} class or anything like it, so ignored".format(module, name))
+            print("> [!NOTE]\\\n> {!r} module doesn't have {!r} class or anything like, so ignored\n".format(module, name))
             continue
 
         kwargs = {"capacity": 1000} if module == "cacheing" else {"maxsize": 1000}
