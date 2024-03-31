@@ -12,147 +12,85 @@ The system on which the benchmarks are done: **Linux x86_64, 8G, Intel i3-1115G4
 
 ## Benchmarks:
 **Versions**:
-- cachebox version: 2.0.1
+- cachebox version: 2.2.0
 - cachetools version: 5.3.3
 - cacheing version: 0.1.1
 
+### Cache
+| Benchmark        | dictionary | cachebox.Cache        | cachetools.Cache         |
+|------------------|:----------:|:---------------------:|:------------------------:|
+| insert 100 items | 1.99 us    | 5.56 us: 2.79x slower | 29.3 us: 14.70x slower   |
+| delete           | 36.7 ns    | 144 ns: 3.93x slower  | 129 ns: 3.51x slower     |
+| clear            | 5.75 ns    | 46.7 ns: 8.11x slower | 9.50 us: 1652.34x slower |
+| get 100 items    | 2.24 us    | 5.38 us: 2.40x slower | 10.5 us: 4.70x slower    |
+| update 100 items | 3.83 us    | 4.64 us: 1.21x slower | 33.5 us: 8.75x slower    |
+| Geometric mean   | (ref)      | 3.04x slower          | 20.37x slower            |
 
-### Cache 
+### FIFOCache
+| Benchmark         | cachebox.FIFOCache | cachetools.FIFOCache  |
+|-------------------|:------------------:|:---------------------:|
+| insert 1000 items | 105 us             | 906 us: 8.60x slower  |
+| delete 100 items  | 146 ns             | 216 ns: 1.47x slower  |
+| clear 100 items   | 46.9 ns            | 420 ns: 8.94x slower  |
+| get 100 items     | 5.48 us            | 10.9 us: 1.98x slower |
+| update 1000 items | 93.9 us            | 940 us: 10.01x slower |
+| Geometric mean    | (ref)              | 4.68x slower          |
 
-| Operation\Class | cachebox.Cache | cachetools.Cache | Python dictionary |
-| --------------- | -------------- | ---------------- | ----------------- |
-| clear           | 2.55ms/0.1KB   | 7.12ms/0.8KB     | 2.21ms/0.1KB      |
-| delete          | 2.00ms/0.1KB   | 3.37ms/0.1KB     | 2.61ms/0.1KB      |
-| get             | 2.51ms/0.1KB   | 2.14ms/0.1KB     | 2.28ms/0.1KB      |
-| insert          | 2.70ms/23.8KB  | 5.43ms/69.0KB    | 2.77ms/69.0KB     |
-| pop             | 2.60ms/0.1KB   | 3.82ms/0.1KB     | 2.56ms/0.1KB      |
-| popitem         | N/A            | 5.07ms/0.2KB     | 2.44ms/0.1KB      |
-| setdefault      | 2.73ms/23.8KB  | 5.47ms/69.0KB    | 2.45ms/69.0KB     |
-| update          | 1.37ms/69.2KB  | 4.25ms/116.6KB   | 0.66ms/97.6KB     |
+### LFUCache
+| Benchmark         | cachebox.LFUCache | cachetools.LFUCache      | cacheing.LFUCache     |
+|-------------------|:-----------------:|:------------------------:|:---------------------:|
+| insert 1000 items | 606 us            | 4.24 ms: 7.00x slower    | 672 us: 1.11x slower  |
+| delete            | 184 ns            | 380 ns: 2.07x slower     | 267 ns: 1.45x slower  |
+| clear             | 45.9 ns           | 47.2 us: 1028.01x slower | 340 ns: 7.40x slower  |
+| get 100 items     | 5.71 us           | 31.0 us: 5.42x slower    | 33.2 us: 5.81x slower |
+| update 1000 items | 543 us            | 4.29 ms: 7.90x slower    | 705 us: 1.30x slower  |
+| Geometric mean    | (ref)             | 14.48x slower            | 2.46x slower          |
 
-- 🥇 `dict` (Python dictionary) and `cachebox.Cache` are very similar (test with zero maxsize, you will see this)
-- 🥈 `cachetools.Cache`
+### LRUCache
+| Benchmark         | cachebox.LRUCache | cachetools.LRUCache    | cacheing.LRUCache     |
+|-------------------|:-----------------:|:----------------------:|:---------------------:|
+| insert 1000 items | 105 us            | 1.09 ms: 10.42x slower | 509 us: 4.86x slower  |
+| delete            | 147 ns            | 216 ns: 1.47x slower   | 195 ns: 1.33x slower  |
+| clear             | 45.9 ns           | 577 ns: 12.58x slower  | 212 ns: 4.63x slower  |
+| get 100 items     | 5.89 us           | 25.1 us: 4.25x slower  | 15.7 us: 2.66x slower |
+| update 1000 items | 93.3 us           | 1.14 ms: 12.19x slower | 542 us: 5.81x slower  |
+| Geometric mean    | (ref)             | 6.31x slower           | 3.41x slower          |
 
-### FIFOCache 
+### RRCache
+| Benchmark         | cachebox.RRCache | cachetools.RRCache      | cacheing.RRCache      |
+|-------------------|:----------------:|:-----------------------:|:---------------------:|
+| insert 1000 items | 170 us           | 1.51 ms: 8.87x slower   | 831 us: 4.88x slower  |
+| delete            | 144 ns           | 128 ns: 1.12x faster    | 284 ns: 1.97x slower  |
+| clear             | 47.4 ns          | 24.9 us: 526.08x slower | 987 ns: 20.83x slower |
+| get 100 items     | 5.38 us          | 10.8 us: 2.00x slower   | 6.66 us: 1.24x slower |
+| update 1000 items | 167 us           | 1.53 ms: 9.19x slower   | 864 us: 5.18x slower  |
+| Geometric mean    | (ref)            | 9.48x slower            | 4.19x slower          |
 
-| Operation\Class | cachebox.FIFOCache | cachetools.FIFOCache |
-| --------------- | ------------------ | -------------------- |
-| clear           | 29.21ms/0.1KB      | 48.55ms/0.9KB        |
-| delete          | 2.73ms/0.1KB       | 3.31ms/0.1KB         |
-| get             | 2.66ms/0.1KB       | 2.16ms/0.1KB         |
-| insert          | 13.61ms/32.1KB     | 46.69ms/318.4KB      |
-| pop             | 2.47ms/0.1KB       | 3.74ms/0.1KB         |
-| popitem         | 2.36ms/0.1KB       | 5.77ms/0.2KB         |
-| setdefault      | 9.12ms/32.1KB      | 55.26ms/318.4KB      |
-| update          | 4.06ms/609.2KB     | 52.54ms/893.1KB      |
+### TTLCache
+| Benchmark         | cachebox.TTLCache | cachetools.TTLCache    | cacheing.TTLCache      |
+|-------------------|:-----------------:|:----------------------:|:----------------------:|
+| insert 1000 items | 166 us            | 3.41 ms: 20.49x slower | 1.71 ms: 10.31x slower |
+| delete            | 179 ns            | 527 ns: 2.94x slower   | 570 ns: 3.18x slower   |
+| clear             | 47.2 ns           | 1.94 us: 41.18x slower | 352 ns: 7.46x slower   |
+| get 100 items     | 7.67 us           | 112 us: 14.66x slower  | 62.8 us: 8.19x slower  |
+| update 1000 items | 121 us            | 3.44 ms: 28.32x slower | 1.76 ms: 14.49x slower |
+| Geometric mean    | (ref)             | 15.94x slower          | 7.81x slower           |
 
-- 🥇 `cachebox.FIFOCache`
-- 🥈 `cachetools.FIFOCache`
-
-### LFUCache 
-
-| Operation\Class | cachebox.LFUCache | cachetools.LFUCache | cacheing.LFUCache |
-| --------------- | ----------------- | ------------------- | ----------------- |
-| clear           | 8.15ms/0.1KB      | 125.74ms/1.0KB      | 33.78ms/0.9KB     |
-| delete          | 2.95ms/0.1KB      | 2.26ms/0.2KB        | 3.50ms/0.1KB      |
-| get             | 2.58ms/0.1KB      | 3.27ms/0.1KB        | 4.04ms/109.3KB    |
-| insert          | 29.20ms/27.8KB    | 500.33ms/253.3KB    | 29.88ms/392.0KB   |
-| pop             | 4.33ms/0.1KB      | 4.97ms/0.2KB        | 6.00ms/0.7KB      |
-| popitem         | 6.16ms/0.1KB      | 42.98ms/0.4KB       | 4.36ms/0.1KB      |
-| setdefault      | 36.43ms/28.1KB    | 560.49ms/253.3KB    | 62.81ms/393.0KB   |
-| update          | 36.29ms/609.2KB   | 549.29ms/828.0KB    | 21.07ms/966.7KB   |
-
-- 🥇 `cachebox.LFUCache`
-- 🥈 `cacheing.LFUCache`
-- 🥉 `cachetools.LFUCache`
-
-### LRUCache 
-
-| Operation\Class | cachebox.LRUCache | cachetools.LRUCache | cacheing.LRUCache |
-| --------------- | ----------------- | ------------------- | ----------------- |
-| clear           | 17.17ms/0.1KB     | 40.85ms/0.9KB       | 32.88ms/0.9KB     |
-| delete          | 2.87ms/0.1KB      | 3.74ms/0.1KB        | 3.10ms/0.1KB      |
-| get             | 2.65ms/0.1KB      | 2.99ms/0.1KB        | 2.98ms/0.1KB      |
-| insert          | 13.83ms/32.1KB    | 48.88ms/318.4KB     | 33.60ms/318.0KB   |
-| pop             | 2.52ms/0.1KB      | 3.75ms/0.1KB        | 4.65ms/0.1KB      |
-| popitem         | 2.60ms/0.1KB      | 3.95ms/0.2KB        | 5.52ms/0.1KB      |
-| setdefault      | 12.65ms/32.1KB    | 47.41ms/318.4KB     | 87.97ms/319.2KB   |
-| update          | 7.13ms/609.2KB    | 53.17ms/893.1KB     | 19.30ms/892.8KB   |
-
-- 🥇 `cachebox.LRUCache`
-- 🥈 `cacheing.LRUCache`
-- 🥉 `cachetools.LRUCache`
-
-### RRCache 
-
-| Operation\Class | cachebox.RRCache | cachetools.RRCache | cacheing.RandomCache |
-| --------------- | ---------------- | ------------------ | -------------------- |
-| clear           | 10.73ms/0.1KB    | 75.34ms/8.3KB      | 57.18ms/5.2KB        |
-| delete          | 5.43ms/0.1KB     | 3.12ms/0.1KB       | 1.90ms/5.1KB         |
-| get             | 3.39ms/0.1KB     | 2.59ms/0.1KB       | 1.95ms/0.1KB         |
-| insert          | 27.59ms/32.0KB   | 105.11ms/179.6KB   | 54.05ms/285.9KB      |
-| pop             | 2.42ms/0.1KB     | 3.74ms/0.1KB       | 5.98ms/5.1KB         |
-| popitem         | 3.53ms/0.1KB     | 14.22ms/8.3KB      | 9.75ms/5.2KB         |
-| setdefault      | 17.14ms/32.1KB   | 111.84ms/179.6KB   | 68.01ms/286.6KB      |
-| update          | 17.58ms/609.2KB  | 132.18ms/754.3KB   | 40.80ms/860.6KB      |
-
-- 🥇 `cachebox.RRCache`
-- 🥈 `cacheing.RandomCache`
-- 🥉 `cachetools.RRCache`
-
-### TTLCache 
-
-| Operation\Class | cachebox.TTLCache | cachetools.TTLCache | cacheing.TTLCache |
-| --------------- | ----------------- | ------------------- | ----------------- |
-| clear           | 21.28ms/0.1KB     | 69.25ms/1.0KB       | 41.00ms/1.1KB     |
-| delete          | 2.36ms/0.1KB      | 5.05ms/0.2KB        | 2.54ms/0.2KB      |
-| get             | 2.37ms/0.1KB      | 1.30ms/0.2KB        | 7.31ms/0.2KB      |
-| insert          | 22.24ms/32.1KB    | 124.60ms/406.7KB    | 78.54ms/1878.3KB  |
-| pop             | 1.81ms/0.1KB      | 7.80ms/0.3KB        | 3.85ms/0.2KB      |
-| popitem         | 2.76ms/0.1KB      | 5.39ms/0.4KB        | 1.55ms/0.1KB      |
-| setdefault      | 23.89ms/32.1KB    | 155.65ms/404.5KB    | 146.26ms/1877.9KB |
-| update          | 10.71ms/609.2KB   | 114.78ms/981.4KB    | 57.24ms/2173.3KB  |
-
-- 🥇 `cachebox.TTLCache`
-- 🥈 `cacheing.TTLCache`
-- 🥉 `cachetools.TTLCache`
-
-### VTTLCache 
-
-| Operation\Class | cachebox.VTTLCache | cacheing.VTTLCache |
-| --------------- | ------------------ | ------------------ |
-| clear           | 8.23ms/0.1KB       | 38.31ms/1.1KB      |
-| delete          | 3.34ms/0.1KB       | 2.02ms/0.2KB       |
-| get             | 2.73ms/0.1KB       | 1.66ms/0.2KB       |
-| insert          | 123.41ms/32.1KB    | 12808.14ms/1884.7KB |
-| pop             | 3.31ms/0.1KB       | 3.23ms/0.2KB       |
-| popitem         | 2.55ms/0.1KB       | 1.25ms/0.1KB       |
-| setdefault      | 122.71ms/32.1KB    | 12870.23ms/1886.5KB |
-| update          | 7.00ms/609.2KB     | 12905.77ms/2631.1KB |
-
-- 🥇 `cachebox.VTTLCache`
-- 🥈 `cacheing.VTTLCache`
+### VTTLCache
+| Benchmark         | cachebox.VTTLCache | cacheing.VTTLCache     |
+|-------------------|:------------------:|:----------------------:|
+| insert 1000 items | 1.41 ms            | 6.33 ms: 4.48x slower  |
+| get 100 items     | 5.53 us            | 66.4 us: 12.00x slower |
+| update 1000 items | 90.7 us            | 8.53 ms: 94.02x slower |
+| Geometric mean    | (ref)              | 17.17x slower          |
 
 > [!TIP]\
 > According to this benchmark, In `cachebox.VTTLCache` if you want to insert several values in a time, use `update` instead of `insert` or `__setitem__`.
 
 ## Run yourself
-1. Download source from here.
-```sh
-git clone https://github.com/awolverp/cachebox-benchmark
-cd cachebox-benchmark
+use command `make <class>` to generate data-files for `<class>`; for example, we want compare `Cache` classes here:
+```bash
+make Cache
 ```
 
-2. Install/Upgrade requirements:
-```sh
-pip3 install -U -r requirements.txt
-```
-
-3. You can run benchmark using `make` script or manually:
-```sh
-# Make:
-make
-
-# Manually:
-python3 main.py Cache FIFOCache LFUCache LRUCache RRCache TTLCache VTTLCache
-```
+This will create data-files and show you the benchmark table.

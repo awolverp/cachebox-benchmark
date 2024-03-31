@@ -1,3 +1,4 @@
-cachebox==2.0.1
-cacheing==0.1.1
-cachetools==5.3.3
+cachebox
+cacheing
+cachetools
+pyperf
