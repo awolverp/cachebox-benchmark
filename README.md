@@ -3,28 +3,30 @@ According to my new library [cachebox](https://github.com/awolverp/cachebox), I 
 I know, to show power of my library ...
 
 **Qualification criteria is:**
-- Needs to support minimum 2 alghoritms
-- Runs on Python3.8+
+- Needs to support minimum 5 alghoritms
+- Runs on Python3.8 and above
 
 If you know other library, tell me to add it to this page.
 
-The system on which the benchmarks are done: **Linux x86_64, 8G, Intel i3-1115G4**
+> [!NOTE]\
+> The system on which the benchmarks are done: **Linux x86_64, 8G, Intel i3-1115G4**
+
 
 ## Benchmarks:
 **Versions**:
-- cachebox version: 2.2.0
+- cachebox version: 2.2.2
 - cachetools version: 5.3.3
 - cacheing version: 0.1.1
 
 ### Cache
 | Benchmark        | dictionary | cachebox.Cache        | cachetools.Cache         |
 |------------------|:----------:|:---------------------:|:------------------------:|
-| insert 100 items | 1.99 us    | 5.56 us: 2.79x slower | 29.3 us: 14.70x slower   |
-| delete           | 36.7 ns    | 144 ns: 3.93x slower  | 129 ns: 3.51x slower     |
-| clear            | 5.75 ns    | 46.7 ns: 8.11x slower | 9.50 us: 1652.34x slower |
-| get 100 items    | 2.24 us    | 5.38 us: 2.40x slower | 10.5 us: 4.70x slower    |
-| update 100 items | 3.83 us    | 4.64 us: 1.21x slower | 33.5 us: 8.75x slower    |
-| Geometric mean   | (ref)      | 3.04x slower          | 20.37x slower            |
+| insert 100 items | 1.99 us    | 5.37 us: 2.69x slower | 29.3 us: 14.70x slower   |
+| delete           | 36.8 ns    | 169 ns: 4.60x slower  | 128 ns: 3.48x slower     |
+| clear            | 6.46 ns    | 49.1 ns: 7.60x slower | 9.49 us: 1469.51x slower |
+| get 100 items    | 2.29 us    | 5.52 us: 2.41x slower | 10.6 us: 4.62x slower    |
+| update 100 items | 3.89 us    | 4.07 us: 1.05x slower | 33.5 us: 8.61x slower    |
+| Geometric mean   | (ref)      | 2.99x slower          | 19.74x slower            |
 
 ### FIFOCache
 | Benchmark         | cachebox.FIFOCache | cachetools.FIFOCache  |
@@ -59,12 +61,12 @@ The system on which the benchmarks are done: **Linux x86_64, 8G, Intel i3-1115G4
 ### RRCache
 | Benchmark         | cachebox.RRCache | cachetools.RRCache      | cacheing.RRCache      |
 |-------------------|:----------------:|:-----------------------:|:---------------------:|
-| insert 1000 items | 170 us           | 1.51 ms: 8.87x slower   | 831 us: 4.88x slower  |
-| delete            | 144 ns           | 128 ns: 1.12x faster    | 284 ns: 1.97x slower  |
-| clear             | 47.4 ns          | 24.9 us: 526.08x slower | 987 ns: 20.83x slower |
-| get 100 items     | 5.38 us          | 10.8 us: 2.00x slower   | 6.66 us: 1.24x slower |
-| update 1000 items | 167 us           | 1.53 ms: 9.19x slower   | 864 us: 5.18x slower  |
-| Geometric mean    | (ref)            | 9.48x slower            | 4.19x slower          |
+| insert 1000 items | 161 us           | 1.51 ms: 9.40x slower   | 831 us: 5.17x slower  |
+| delete            | 147 ns           | 130 ns: 1.13x faster    | 284 ns: 1.94x slower  |
+| clear             | 46.2 ns          | 27.9 us: 603.53x slower | 989 ns: 21.40x slower |
+| get 100 items     | 5.34 us          | 10.8 us: 2.03x slower   | 6.66 us: 1.25x slower |
+| update 1000 items | 152 us           | 1.53 ms: 10.08x slower  | 860 us: 5.67x slower  |
+| Geometric mean    | (ref)            | 10.05x slower           | 4.33x slower          |
 
 ### TTLCache
 | Benchmark         | cachebox.TTLCache | cachetools.TTLCache    | cacheing.TTLCache      |

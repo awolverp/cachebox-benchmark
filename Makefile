@@ -101,20 +101,20 @@ VTTLCache:
 
 .PHONY: show
 show:
-	@python3 -m pyperf compare_to --table --table-format md data-files/dictionary.json data-files/cachebox.Cache.json data-files/cachetools.Cache.json
-	@echo ""
+	-@python3 -m pyperf compare_to --table --table-format md data-files/dictionary.json data-files/cachebox.Cache.json data-files/cachetools.Cache.json
+	-@echo ""
 	
-	@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.FIFOCache.json data-files/cachetools.FIFOCache.json
-	@echo ""
-	@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.LFUCache.json data-files/cachetools.LFUCache.json data-files/cacheing.LFUCache.json
-	@echo ""
-	@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.LRUCache.json data-files/cachetools.LRUCache.json data-files/cacheing.LRUCache.json
-	@echo ""
-	@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.RRCache.json data-files/cachetools.RRCache.json data-files/cacheing.RRCache.json
-	@echo ""
-	@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.TTLCache.json data-files/cachetools.TTLCache.json data-files/cacheing.TTLCache.json
-	@echo ""
-	@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.VTTLCache.json data-files/cacheing.VTTLCache.json
+	-@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.FIFOCache.json data-files/cachetools.FIFOCache.json
+	-@echo ""
+	-@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.LFUCache.json data-files/cachetools.LFUCache.json data-files/cacheing.LFUCache.json
+	-@echo ""
+	-@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.LRUCache.json data-files/cachetools.LRUCache.json data-files/cacheing.LRUCache.json
+	-@echo ""
+	-@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.RRCache.json data-files/cachetools.RRCache.json data-files/cacheing.RRCache.json
+	-@echo ""
+	-@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.TTLCache.json data-files/cachetools.TTLCache.json data-files/cacheing.TTLCache.json
+	-@echo ""
+	-@python3 -m pyperf compare_to --table --table-format md data-files/cachebox.VTTLCache.json data-files/cacheing.VTTLCache.json
 
 .PHONY: hist
 hist:
