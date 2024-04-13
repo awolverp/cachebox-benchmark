@@ -25,16 +25,6 @@ def benchmark_delete(loops, cache):
 
 runner.bench_time_func("delete", benchmark_delete, cachebox.TTLCache(0, 2))
 
-# Clear
-def benchmark_clear(loops, cache):
-    cache.update({i:i for i in range(loops)})
-
-    t0 = pyperf.perf_counter()
-    cache.clear()
-    return pyperf.perf_counter() - t0
-
-runner.bench_time_func("clear", benchmark_clear, cachebox.TTLCache(0, 2))
-
 # Get
 runner.timeit(
     "get 100 items",
