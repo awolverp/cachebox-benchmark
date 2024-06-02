@@ -11,10 +11,6 @@ If you know other library, tell me to add it to this page.
 > [!NOTE]\
 > The system on which the benchmarks are done: **Linux x86_64, 8G, Intel i3-1115G4**
 
-> [!NOTE]\
-> We removed **cacheout** library from benchmark because that's very slow;
-> I will add **theine** instead of that.
-
 ## Benchmarks:
 **Versions**:
 - cachebox version: 3.0.0
@@ -93,3 +89,22 @@ make Cache
 ```
 
 This will create data-files and show you the benchmark table.
+
+## Notes
+
+**Note about cacheout**
+We removed **cacheout** library from benchmark because that's very slow;
+
+**Note about theine**
+We didn't add **theine** because it don't have many methods and operations
+and only has 3 policies. We only compare a LRU policy for you to see speeds:
+
+```sh
+$ python3 -m timeit -s 'import theine; c = theine.Cache("lru", 1000)' 'for i in range(1000): c.set(i, i)'
+500 loops, best of 5: 462 usec per loop
+
+$ python3 -m timeit -s 'import cachebox; c = cachebox.LRUCache(1000)' 'for i in range(1000): c.insert(i, i)'
+2000 loops, best of 5: 118 usec per loop
+```
+
+And it has high memory usage that is not good for a caching library ...
