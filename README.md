@@ -92,10 +92,10 @@ This will create data-files and show you the benchmark table.
 
 ## Notes
 
-**Note about cacheout**
+**Note about cacheout**\
 We removed **cacheout** library from benchmark because that's very slow;
 
-**Note about theine**
+**Note about theine**\
 We didn't add **theine** because it don't have many methods and operations
 and only has 3 policies. We only compare a LRU policy for you to see speeds:
 
