@@ -1,6 +1,6 @@
 # Caching libraries Benchmarks
 According to my new library [cachebox](https://github.com/awolverp/cachebox), I decided to benchmark caching libraries
-I know, to show power of my library ...
+which are I know, to show the power of [cachebox](https://github.com/awolverp/cachebox) ...
 
 **Qualification criteria is:**
 - Needs to support minimum 5 alghoritms
@@ -13,45 +13,45 @@ If you know other library, tell me to add it to this page.
 
 ## Benchmarks:
 **Versions**:
-- cachebox version: 3.0.0
+- cachebox version: 3.2.1
 - cachetools version: 5.3.3
 - cacheing version: 0.1.1
 
 ### Cache
 | Benchmark        | dictionary | cachebox.Cache        | cachetools.Cache       |
 |------------------|:----------:|:---------------------:|:----------------------:|
-| insert 100 items | 1.93 us    | 5.49 us: 2.84x slower | 32.5 us: 16.81x slower |
-| delete           | 46.2 ns    | 147 ns: 3.19x slower  | 149 ns: 3.22x slower   |
-| get 100 items    | 2.05 us    | 5.36 us: 2.62x slower | 11.5 us: 5.60x slower  |
-| update 100 items | 3.66 us    | 4.19 us: 1.14x slower | 37.1 us: 10.13x slower |
-| Geometric mean   | (ref)      | 2.28x slower          | 7.44x slower           |
+| insert 100 items | 1.91 us    | 5.36 us: 2.81x slower | 32.7 us: 17.13x slower |
+| delete           | 46.3 ns    | 149 ns: 3.22x slower  | 148 ns: 3.19x slower   |
+| get 100 items    | 2.07 us    | 5.40 us: 2.61x slower | 11.3 us: 5.47x slower  |
+| update 100 items | 3.70 us    | 4.14 us: 1.12x slower | 36.9 us: 9.96x slower  |
+| Geometric mean   | (ref)      | 2.27x slower          | 7.39x slower           |
 
 ### FIFOCache
 | Benchmark         | cachebox.FIFOCache | cachetools.FIFOCache   |
 |-------------------|:------------------:|:----------------------:|
-| insert 1000 items | 88.9 us            | 1.03 ms: 11.55x slower |
-| delete            | 159 ns             | 256 ns: 1.61x slower   |
-| get 100 items     | 5.40 us            | 11.5 us: 2.13x slower  |
-| update 1000 items | 71.9 us            | 1.09 ms: 15.11x slower |
-| Geometric mean    | (ref)              | 4.95x slower           |
+| insert 1000 items | 92.5 us            | 1.02 ms: 11.01x slower |
+| delete            | 155 ns             | 254 ns: 1.63x slower   |
+| get 100 items     | 5.37 us            | 11.2 us: 2.09x slower  |
+| update 1000 items | 77.5 us            | 1.08 ms: 13.98x slower |
+| Geometric mean    | (ref)              | 4.79x slower           |
 
 ### LFUCache
-| Benchmark         | cachebox.LFUCache | cacheing.LFUCache     | cachetools.LFUCache    |
-|-------------------|:-----------------:|:---------------------:|:----------------------:|
-| insert 1000 items | 320 us            | 729 us: 2.28x slower  | 4.90 ms: 15.29x slower |
-| delete            | 148 ns            | 322 ns: 2.17x slower  | 399 ns: 2.69x slower   |
-| get 100 items     | 5.41 us           | 35.9 us: 6.63x slower | 38.3 us: 7.07x slower  |
-| update 1000 items | 285 us            | 770 us: 2.71x slower  | 4.93 ms: 17.32x slower |
-| Geometric mean    | (ref)             | 3.07x slower          | 8.42x slower           |
+| Benchmark         | cachebox.LFUCache | cachetools.LFUCache    | cacheing.LFUCache     |
+|-------------------|:-----------------:|:----------------------:|:---------------------:|
+| insert 1000 items | 335 us            | 4.93 ms: 14.72x slower | 726 us: 2.17x slower  |
+| delete            | 148 ns            | 391 ns: 2.64x slower   | 316 ns: 2.13x slower  |
+| get 100 items     | 5.44 us           | 38.1 us: 7.00x slower  | 35.7 us: 6.57x slower |
+| update 1000 items | 298 us            | 4.96 ms: 16.63x slower | 765 us: 2.56x slower  |
+| Geometric mean    | (ref)             | 8.20x slower           | 2.97x slower          |
 
 ### LRUCache
 | Benchmark         | cachebox.LRUCache | cachetools.LRUCache    | cacheing.LRUCache     |
 |-------------------|:-----------------:|:----------------------:|:---------------------:|
-| insert 1000 items | 86.0 us           | 1.28 ms: 14.93x slower | 561 us: 6.52x slower  |
-| delete            | 157 ns            | 257 ns: 1.64x slower   | 232 ns: 1.48x slower  |
-| get 100 items     | 6.28 us           | 29.2 us: 4.65x slower  | 15.9 us: 2.54x slower |
-| update 1000 items | 70.6 us           | 1.33 ms: 18.82x slower | 597 us: 8.46x slower  |
-| Geometric mean    | (ref)             | 6.80x slower           | 3.79x slower          |
+| insert 1000 items | 94.5 us           | 1.33 ms: 14.05x slower | 557 us: 5.90x slower  |
+| delete            | 158 ns            | 253 ns: 1.60x slower   | 229 ns: 1.45x slower  |
+| get 100 items     | 6.18 us           | 29.0 us: 4.69x slower  | 15.9 us: 2.57x slower |
+| update 1000 items | 77.0 us           | 1.38 ms: 17.94x slower | 596 us: 7.74x slower  |
+| Geometric mean    | (ref)             | 6.60x slower           | 3.61x slower          |
 
 ### RRCache
 | Benchmark         | cachebox.RRCache | cachetools.RRCache     | cacheing.RRCache      |
@@ -65,19 +65,19 @@ If you know other library, tell me to add it to this page.
 ### TTLCache
 | Benchmark         | cachebox.TTLCache | cachetools.TTLCache    | cacheing.TTLCache      |
 |-------------------|:-----------------:|:----------------------:|:----------------------:|
-| insert 1000 items | 139 us            | 3.25 ms: 23.35x slower | 1.82 ms: 13.07x slower |
-| delete            | 181 ns            | 528 ns: 2.92x slower   | 637 ns: 3.53x slower   |
-| get 100 items     | 7.29 us           | 95.7 us: 13.12x slower | 68.6 us: 9.42x slower  |
-| update 1000 items | 92.9 us           | 3.36 ms: 36.18x slower | 1.89 ms: 20.33x slower |
-| Geometric mean    | (ref)             | 13.42x slower          | 9.69x slower           |
+| insert 1000 items | 146 us            | 3.26 ms: 22.30x slower | 1.80 ms: 12.34x slower |
+| delete            | 181 ns            | 522 ns: 2.89x slower   | 632 ns: 3.50x slower   |
+| get 100 items     | 7.31 us           | 94.6 us: 12.94x slower | 67.5 us: 9.23x slower  |
+| update 1000 items | 102 us            | 3.31 ms: 32.63x slower | 1.84 ms: 18.14x slower |
+| Geometric mean    | (ref)             | 12.84x slower          | 9.22x slower           |
 
 ### VTTLCache
 | Benchmark         | cachebox.VTTLCache | cacheing.VTTLCache      |
 |-------------------|:------------------:|:-----------------------:|
-| insert 1000 items | 693 us             | 6.86 ms: 9.91x slower   |
-| get 100 items     | 5.49 us            | 68.4 us: 12.45x slower  |
-| update 1000 items | 86.0 us            | 9.19 ms: 106.91x slower |
-| Geometric mean    | (ref)              | 23.63x slower           |
+| insert 1000 items | 729 us             | 6.87 ms: 9.43x slower   |
+| get 100 items     | 5.47 us            | 67.5 us: 12.34x slower  |
+| update 1000 items | 90.5 us            | 9.19 ms: 101.58x slower |
+| Geometric mean    | (ref)              | 22.78x slower           |
 
 > [!TIP]\
 > According to this benchmark, In `cachebox.VTTLCache` if you want to insert several values in a time, use `update` instead of `insert` or `__setitem__`.
