@@ -1,5 +1,5 @@
+matplotlib
 cachebox
-cacheing
 cachetools
-cacheout
-pyperf
+cacheing
+lru-dict
