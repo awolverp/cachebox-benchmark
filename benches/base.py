@@ -47,18 +47,20 @@ class Benchmark:
 
     def start(self, verbose: bool = True):
         if verbose and self.title:
-                print(self.title, "(BENCHMARK)")
+            print(self.title, "(BENCHMARK)")
 
         for name, f in self.funcs:
+            time.sleep(0.5)
+            
             b = Bencher()
             f(b)
 
             assert b.performance is not None, "stop bencher at the end of your function"
 
             if verbose:
-                print("* {} - Performance: {:.1f}ms".format(name, b.performance * 1000))
+                print("* {} - Performance: {:.1f}us".format(name, int(b.performance * 1000000)))
 
-            self._stats.append((name, b.performance * 1000))
+            self._stats.append((name, int(b.performance * 1000000)))
 
         return self._stats
 
@@ -80,7 +82,7 @@ class Benchmark:
             ax.text(
                 bar.get_width() + 0.01,
                 bar.get_y() + bar.get_height() / 2,
-                "{}ms".format(round(bar.get_width(), 1)),
+                "{}us".format(bar.get_width()),
                 verticalalignment="center",
                 color="#fff",
                 weight="bold",

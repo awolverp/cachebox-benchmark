@@ -10,21 +10,49 @@ If you know other library, tell me to add it to this page.
 ## Benchmarks:
 **Versions**:
 - Python: 3.12.4
-- cachebox version: 3.4.0
-- cachetools version: 5.3.3
+- cachebox version: 4.0.0
+- cachetools version: 5.4.0
 - cacheing version: 0.1.1
 - lru-dict: 1.3.0
 
-![cache-image](plots/cache.png)
+## Cache
 
-![fifo-image](plots/fifo.png)
+![cache-image](plots/cache_NoEQ.png)
 
-![lru-image](plots/lru.png)
+![cache-image](plots/cache_EQ.png)
 
-![rr-image](plots/rr.png)
+## FIFOCache
 
-![lfu-image](plots/lfu.png)
+![fifo-image](plots/fifo_NoEQ.png)
 
-![ttl-image](plots/ttl.png)
+![fifo-image](plots/fifo_EQ.png)
 
-![vttl-image](plots/vttl.png)
+## LFUCache
+
+![lfu-image](plots/lfu_NoEQ.png)
+
+![lfu-image](plots/lfu_EQ.png)
+
+## LRUCache
+
+![lru-image](plots/lru_NoEQ.png)
+
+![lru-image](plots/lru_EQ.png)
+
+## RRCache
+
+![rr-image](plots/rr_NoEQ.png)
+
+![rr-image](plots/rr_EQ.png)
+
+## TTLCache
+
+![ttl-image](plots/ttl_NoEQ.png)
+
+![ttl-image](plots/ttl_EQ.png)
+
+## VTTLCache
+
+![vttl-image](plots/vttl_NoEQ.png)
+
+![vttl-image](plots/vttl_EQ.png)
