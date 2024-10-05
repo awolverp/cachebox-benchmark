@@ -1,4 +1,3 @@
-from __future__ import annotations
 from benches.base import Benchmark
 from benches import funcs
 import os.path, os
