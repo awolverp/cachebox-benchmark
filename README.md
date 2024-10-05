@@ -56,3 +56,19 @@ If you know other library, tell me to add it to this page.
 ![vttl-image](plots/vttl_NoEQ.png)
 
 ![vttl-image](plots/vttl_EQ.png)
+
+# Run for yourself
+Clone repository with **git** (or download it from here):
+```bash
+git clone https://github.com/awolverp/cachebox-benchmark
+```
+
+Install requirements:
+```bash
+pip3 install -U -r requiremenets.txt
+```
+
+Run benchmark:
+```bash
+python3 main.py
+```
