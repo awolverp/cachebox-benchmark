@@ -1,4 +1,4 @@
-matplotlib
+matplotx
 cachebox
 cachetools
 cacheing
