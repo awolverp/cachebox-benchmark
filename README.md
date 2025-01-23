@@ -9,9 +9,9 @@ If you know other library, tell me to add it to this page.
 
 ## Benchmarks:
 **Versions**:
-- Python: 3.12.6
-- cachebox version: 4.2.3
-- cachetools version: 5.5.0
+- Python: 3.12.7
+- cachebox version: 4.4.2
+- cachetools version: 5.5.1
 - cacheing version: 0.1.1
 - lru-dict: 1.3.0
 

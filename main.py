@@ -1,5 +1,3 @@
-# from benches.base import Benchmark
-# from benches import funcs
 from measure import GroupBenchmark, Benchmark, PerfCtx
 import random
 import os.path
