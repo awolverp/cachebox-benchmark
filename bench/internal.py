@@ -137,97 +137,73 @@ class Context:
         return warmup_iterations
 
     def run(
-    self,
+        self,
         func: typing.Callable,
         range_n: int,
         setup: typing.Callable = None,
         min_iterations: int = 5,
         max_iterations: int = 100,
-        target_precision: float = 0.01,
+        target_precision: float = 0.01,  # 1% precision target
     ):
         assert not self._result
         
         print(f"\r    :: BENCHMARKING {self.prefix}", end="", flush=True)
         
         with benchmark_environment():
-            # Pre-create all setup results to avoid timing setup overhead
-            setup_results = []
-            if setup is not None:
-                for i in range(range_n):
-                    setup_results.append(setup(i))
-            
-            # Adaptive warmup with pre-created setup
-            warmup_iters = min(100, range_n // 10)  # More conservative warmup
+            # Adaptive warmup
+            warmup_iters = self._adaptive_warmup(func, setup)
             
             # Warmup phase
-            for i in range(warmup_iters):
-                if setup_results:
-                    func(i % range_n, setup_results[i % len(setup_results)])
+            for _ in range(warmup_iters):
+                if setup is not None:
+                    argument = setup(0)
+                    func(0, argument)
                 else:
-                    func(i % range_n)
+                    func(0)
             
             # Force garbage collection after warmup
             gc.collect()
             
-            # Measurement phase with larger batches for stability
+            # Measurement phase with adaptive iteration count
             measurements = []
             iteration = 0
-            consecutive_stable_batches = 0
             
-            while iteration < max_iterations and consecutive_stable_batches < 3:
+            while iteration < max_iterations:
                 batch_times = []
                 
-                # Larger batch size for more stable measurements
-                batch_size = min(50, range_n)
-                
-                # Measure entire batch with minimal overhead
-                batch_start = self._timer()
+                # Collect a batch of measurements
+                batch_size = min(10, range_n)
                 for i in range(batch_size):
-                    idx = (iteration + i) % range_n
-                    if setup_results:
-                        func(idx, setup_results[idx])
+                    if setup is not None:
+                        argument = setup(i % range_n)
                     else:
-                        func(idx)
-                batch_end = self._timer()
-                
-                # Calculate average time per operation in this batch
-                avg_batch_time = (batch_end - batch_start) / batch_size
-                
-                # Individual measurements within batch (more precise)
-                for i in range(min(10, batch_size)):  # Sample some individual ops
-                    idx = (iteration + i) % range_n
+                        argument = None
+                    
+                    # Single measurement
                     start = self._timer()
-                    if setup_results:
-                        func(idx, setup_results[idx])
+                    if argument is None:
+                        func(i % range_n)
                     else:
-                        func(idx)
+                        func(i % range_n, argument)
                     end = self._timer()
+                    
                     batch_times.append(end - start)
                 
                 measurements.extend(batch_times)
                 iteration += batch_size
                 
-                # Check batch stability
-                if len(batch_times) > 1:
-                    batch_cv = statistics.stdev(batch_times) / statistics.mean(batch_times)
-                    if batch_cv < 0.05:  # Low coefficient of variation
-                        consecutive_stable_batches += 1
-                    else:
-                        consecutive_stable_batches = 0
-                
-                # Early stopping if we have stable results
+                # Check if we have enough precision
                 if len(measurements) >= min_iterations:
                     current_mean = statistics.mean(measurements)
                     if current_mean > 0:
-                        current_cv = statistics.stdev(measurements) / current_mean
-                        if current_cv <= target_precision:
+                        current_precision = statistics.stdev(measurements) / current_mean
+                        if current_precision <= target_precision or iteration >= min_iterations:
                             break
             
-            # More aggressive outlier removal
-            if len(measurements) >= 10:
+            # Remove outliers (remove top and bottom 5% if we have enough samples)
+            if len(measurements) >= 20:
                 measurements.sort()
-                # Remove top and bottom 10% instead of 5%
-                trim_count = len(measurements) // 10
+                trim_count = len(measurements) // 20  # 5%
                 if trim_count > 0:
                     measurements = measurements[trim_count:-trim_count]
             
@@ -244,20 +220,19 @@ class Context:
                 mean_time,
                 max_time,
                 std_time,
-                len(measurements)
+                len(measurements)  # Number of samples
             )
             
             # Assess measurement quality
             noise_ratio = (std_time / mean_time) if mean_time > 0 else 0
-            if noise_ratio > 0.1:
+            if noise_ratio > 0.1:  # 10% noise threshold
                 status = f" (HIGH NOISE: {noise_ratio:.1%})"
-            elif noise_ratio > 0.05:
+            elif noise_ratio > 0.05:  # 5% noise threshold
                 status = f" (MODERATE NOISE: {noise_ratio:.1%})"
             else:
                 status = f" (LOW NOISE: {noise_ratio:.1%})"
             
             print(f"\r    :: BENCHMARKING {self.prefix} PASSED{status} [{len(measurements)} samples]")
-
 
 
 class BenchmarkCase:
