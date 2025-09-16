@@ -1,9 +1,4 @@
-
-
-
-
 # Caching libraries Benchmarks
-
 
 According to my new library [cachebox](https://github.com/awolverp/cachebox), I decided to benchmark caching libraries
 which are I know, to show the power of [cachebox](https://github.com/awolverp/cachebox) ...
@@ -11,188 +6,226 @@ which are I know, to show the power of [cachebox](https://github.com/awolverp/ca
 If you know other library, tell me to add it to this page.
 
 > [!NOTE]\
-> The system on which the benchmarks are done: Linux-6.12.20-2-MANJARO-x86_64-with-glibc2.41
-
-> [!NOTE]\
 > The `cacheing.VTTLCache` class was excluded from the benchmark because of numerous unreasonable errors.
-## Benchmarks
 
 
-**Versions**:
-- Python: 3.13.2
-- cachebox version: 5.0.0
-- cachetools version: 5.5.2
-- cacheing version: 0.1.1
-- lru-dict: 1.3.0
+## 🖥️ System Information
+- **Platform**: Linux-6.15.11-2-MANJARO-x86_64-with-glibc2.42
+- **Python**: 3.13.7
+- **Libraries**:
+  - cachebox: 5.0.2
+  - cachetools: 6.2.0
+  - cacheing: 0.1.1
+  - lru-dict: 1.3.0
 
-### insertion
-
-
-![insertion-image](photos/insertion.png)
-
-|Name|min (ns)|mean (ns)|max (ns)|stddev (ns)|
-| :---: | :---: | :---: | :---: | :---: |
-|builtins.dict|196|248|94128|1102|
-|cachebox.Cache|358|414|98335|1004|
-|cachetools.Cache|568|663|20851|243|
-|cachebox.FIFOCache|360|483|50252|380|
-|cachetools.FIFOCache|991|1165|211356|2448|
-|cachebox.LRUCache|403|497|71116|513|
-|cachetools.LRUCache|1024|1210|161687|2133|
-|_lru.LRU|339|494|237201|1214|
-|cacheing.LRUCache|657|1180|503251|2896|
-|cachebox.LFUCache|433|5926|85648|1914|
-|cacheing.LFUCache|677|1405|557601|3772|
-|cachetools.LFUCache|928|1056|54699|702|
-|cachebox.RRCache|346|3895|168087|2434|
-|cacheing.RandomCache|586|1903|283889|1920|
-|cachetools.RRCache|561|655|19208|239|
-|cachebox.TTLCache|422|518|55923|409|
-|cachetools.TTLCache|1994|2255|302849|3233|
-|cacheing.TTLCache|1707|2549|590998|4524|
-|cachebox.VTTLCache|760|60901|201380|32558|
-
-### lookup
+## 📊 Insertion
 
 
-![lookup-image](photos/lookup.png)
+![insertion](photos/insertion.png)
 
-|Name|min (ns)|mean (ns)|max (ns)|stddev (ns)|
-| :---: | :---: | :---: | :---: | :---: |
-|builtins.dict|193|354|9297|202|
-|cachebox.Cache|285|447|6459|184|
-|cachetools.Cache|350|542|6246|195|
-|cachebox.FIFOCache|291|478|8192|219|
-|cachetools.FIFOCache|358|508|7424|176|
-|cachebox.LRUCache|284|460|7975|209|
-|cachetools.LRUCache|589|761|13392|224|
-|_lru.LRU|319|490|8750|212|
-|cacheing.LRUCache|450|608|9966|233|
-|cachebox.LFUCache|277|466|7279|228|
-|cacheing.LFUCache|650|924|220181|2251|
-|cachetools.LFUCache|697|932|11763|229|
-|cachebox.RRCache|299|466|7650|205|
-|cacheing.RandomCache|245|362|6671|168|
-|cachetools.RRCache|385|523|7737|186|
-|cachebox.TTLCache|489|662|9055|216|
-|cachetools.TTLCache|1609|1805|21517|274|
-|cacheing.TTLCache|1107|1279|13580|199|
-|cachebox.VTTLCache|437|568|9194|203|
-
-### lookup_no_exists
+- **Performance Range**: 16.3x difference between fastest and slowest
+- **Best**: builtins.dict (85ns, 11.8M ops/sec)
+- **Analysis**: 9 of 19 implementations show stable measurements
 
 
-![lookup_no_exists-image](photos/lookup_no_exists.png)
+|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|builtins.dict|85|0|11.8M|89|0.5%|
+|_lru.LRU|100|1|10.0M|88|1.0%|
+|cachebox.Cache|195|39|5.1M|943|20.2%|
+|cachebox.RRCache|196|38|5.1M|944|19.4%|
+|cachebox.FIFOCache|203|45|4.9M|922|22.1%|
+|cachebox.TTLCache|232|45|4.3M|922|19.4%|
+|cachebox.LRUCache|268|75|3.7M|938|27.9%|
+|cachebox.LFUCache|272|77|3.7M|941|28.2%|
+|cacheing.RandomCache|301|21|3.3M|857|6.8%|
+|cachetools.Cache|329|16|3.0M|909|4.8%|
+|cacheing.LRUCache|332|13|3.0M|887|3.8%|
+|cacheing.LFUCache|362|19|2.8M|875|5.1%|
+|cachetools.RRCache|422|23|2.4M|876|5.4%|
+|cachebox.VTTLCache|431|71|2.3M|937|16.6%|
+|cachetools.LFUCache|441|20|2.3M|873|4.5%|
+|cachetools.FIFOCache|595|22|1.7M|875|3.7%|
+|cachetools.LRUCache|616|27|1.6M|893|4.5%|
+|cacheing.TTLCache|1,123|41|0.9M|865|3.7%|
+|cachetools.TTLCache|1,383|68|0.7M|907|4.9%|
 
-|Name|min (ns)|mean (ns)|max (ns)|stddev (ns)|
-| :---: | :---: | :---: | :---: | :---: |
-|builtins.dict|187|240|2774|91|
-|cachebox.Cache|609|1456|15348|1163|
-|cachetools.Cache|285|346|5002|97|
-|cachebox.FIFOCache|598|1487|13811|1201|
-|cachetools.FIFOCache|282|337|3668|96|
-|cachebox.LRUCache|581|1449|24187|1214|
-|cachetools.LRUCache|290|343|4140|90|
-|_lru.LRU|413|492|6555|117|
-|cacheing.LRUCache|1110|1250|12334|181|
-|cachebox.LFUCache|581|1480|25214|1265|
-|cacheing.LFUCache|916|1062|9345|161|
-|cachetools.LFUCache|291|339|5445|106|
-|cachebox.RRCache|623|1445|15723|1148|
-|cacheing.RandomCache|746|893|8416|137|
-|cachetools.RRCache|280|336|3295|90|
-|cachebox.TTLCache|634|1529|25934|1266|
-|cachetools.TTLCache|1211|1356|12476|198|
-|cacheing.TTLCache|2205|2403|13889|244|
-|cachebox.VTTLCache|594|1477|28185|1265|
-
-### deletion
+## 📊 Lookup Existing
 
 
-![deletion-image](photos/deletion.png)
+![lookup_existing](photos/lookup_existing.png)
 
-|Name|min (ns)|mean (ns)|max (ns)|stddev (ns)|
-| :---: | :---: | :---: | :---: | :---: |
-|builtins.dict|211|298|4560|97|
-|cachebox.Cache|348|464|6735|146|
-|cachetools.Cache|382|489|4902|114|
-|cachebox.FIFOCache|341|454|5428|129|
-|cachetools.FIFOCache|508|644|7347|135|
-|cachebox.LRUCache|377|459|40563|419|
-|cachetools.LRUCache|497|627|6751|130|
-|_lru.LRU|276|384|3598|111|
-|cacheing.LRUCache|486|622|8737|144|
-|cachebox.LFUCache|362|457|92501|928|
-|cacheing.LFUCache|556|736|15637|228|
-|cachetools.LFUCache|755|897|10537|144|
-|cachebox.RRCache|356|470|5553|156|
-|cacheing.RandomCache|636|864|9781|194|
-|cachetools.RRCache|387|471|5645|98|
-|cachebox.TTLCache|474|595|7983|140|
-|cachetools.TTLCache|878|1059|59041|729|
-|cacheing.TTLCache|978|1223|43007|632|
-|cachebox.VTTLCache|496|621|68773|698|
-
-### popitem
+- **Performance Range**: 13.5x difference between fastest and slowest
+- **Best**: builtins.dict (82ns, 12.2M ops/sec)
+- **Analysis**: 9 of 19 implementations show stable measurements
 
 
-![popitem-image](photos/popitem.png)
+|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|builtins.dict|82|1|12.2M|98|1.3%|
+|cacheing.RandomCache|103|3|9.7M|792|2.6%|
+|cachebox.Cache|104|5|9.6M|811|4.6%|
+|cachebox.RRCache|106|8|9.4M|936|7.7%|
+|cachebox.FIFOCache|111|8|9.0M|925|7.7%|
+|cachebox.LRUCache|121|28|8.3M|875|22.9%|
+|_lru.LRU|130|7|7.7M|751|5.0%|
+|cachebox.LFUCache|154|60|6.5M|956|38.6%|
+|cachetools.FIFOCache|159|8|6.3M|912|5.3%|
+|cachetools.RRCache|163|10|6.1M|935|6.1%|
+|cachetools.Cache|167|12|6.0M|950|7.2%|
+|cachebox.TTLCache|195|9|5.1M|935|4.8%|
+|cacheing.LRUCache|211|10|4.8M|875|4.6%|
+|cachebox.VTTLCache|235|61|4.3M|935|26.1%|
+|cachetools.LRUCache|315|13|3.2M|860|4.1%|
+|cacheing.LFUCache|376|25|2.7M|897|6.5%|
+|cachetools.LFUCache|405|14|2.5M|906|3.6%|
+|cacheing.TTLCache|729|23|1.4M|909|3.2%|
+|cachetools.TTLCache|1,106|51|0.9M|950|4.6%|
 
-|Name|min (ns)|mean (ns)|max (ns)|stddev (ns)|
-| :---: | :---: | :---: | :---: | :---: |
-|cachebox.FIFOCache|292|371|7362|138|
-|cachebox.LRUCache|309|390|10831|171|
-|_lru.LRU|342|492|4676|193|
-|cacheing.LRUCache|527|617|45496|465|
-|cachebox.LFUCache|316|381|99141|990|
-|cacheing.LFUCache|718|849|10476|147|
-|cachebox.RRCache|370|1907|8932|1202|
-|cacheing.RandomCache|1141|1632|25599|531|
-|cachebox.TTLCache|431|498|9836|125|
-|cacheing.TTLCache|713|862|12449|239|
-|cachebox.VTTLCache|440|531|76785|770|
-
-### collision
-
-
-![collision-image](photos/collision.png)
-
-|Name|min (ns)|mean (ns)|max (ns)|stddev (ns)|
-| :---: | :---: | :---: | :---: | :---: |
-|builtins.dict|551|52697|120837|30285|
-|cachebox.Cache|558|44896|163363|25902|
-|cachetools.Cache|939|108320|356462|62344|
-|cachebox.FIFOCache|547|49466|103137|28578|
-|cachetools.FIFOCache|958|106138|246686|60913|
-|cachebox.LRUCache|527|48347|114290|28348|
-|cachetools.LRUCache|1613|213691|437667|122740|
-|_lru.LRU|653|53113|176793|30383|
-|cacheing.LRUCache|1153|106729|327446|61183|
-|cachebox.LFUCache|531|48530|123115|28493|
-|cacheing.LFUCache|1867|303228|174298351|1802518|
-|cachetools.LFUCache|1783|262934|534687|151162|
-|cachebox.RRCache|557|45512|133681|26228|
-|cacheing.RandomCache|687|53594|177470|30848|
-|cachetools.RRCache|1017|107341|288281|61636|
-|cachebox.TTLCache|786|50526|148786|29298|
-|cachetools.TTLCache|2672|220319|453406|126383|
-|cacheing.TTLCache|1828|107545|249455|61335|
-|cachebox.VTTLCache|726|48703|152847|28352|
-
-## Run for yourself
+## 📊 Lookup Missing
 
 
-Clone repository with **git** (or download it from here):
+![lookup_missing](photos/lookup_missing.png)
+
+- **Performance Range**: 61.7x difference between fastest and slowest
+- **Best**: builtins.dict (83ns, 12.0M ops/sec)
+- **Analysis**: 12 of 19 implementations show stable measurements
+
+
+|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|builtins.dict|83|1|12.0M|84|0.8%|
+|cachetools.RRCache|127|7|7.9M|890|5.7%|
+|cachetools.LFUCache|127|8|7.9M|887|6.3%|
+|cachetools.FIFOCache|129|8|7.7M|891|6.2%|
+|cachetools.LRUCache|130|8|7.7M|888|6.2%|
+|cachetools.Cache|132|11|7.6M|912|8.2%|
+|_lru.LRU|207|11|4.8M|902|5.3%|
+|cacheing.RandomCache|505|19|2.0M|914|3.7%|
+|cacheing.LFUCache|624|19|1.6M|901|3.0%|
+|cacheing.LRUCache|744|20|1.3M|911|2.7%|
+|cachetools.TTLCache|826|25|1.2M|921|3.0%|
+|cachebox.Cache|1,202|543|0.8M|998|45.2%|
+|cacheing.TTLCache|1,709|64|0.6M|963|3.8%|
+|cachebox.RRCache|4,601|124|0.2M|977|2.7%|
+|cachebox.LRUCache|4,768|126|0.2M|939|2.7%|
+|cachebox.LFUCache|4,808|145|0.2M|958|3.0%|
+|cachebox.VTTLCache|4,817|141|0.2M|949|2.9%|
+|cachebox.FIFOCache|5,121|145|0.2M|979|2.8%|
+|cachebox.TTLCache|5,128|131|0.2M|944|2.6%|
+
+## 📊 Deletion
+
+
+![deletion](photos/deletion.png)
+
+- **Performance Range**: 8.3x difference between fastest and slowest
+- **Best**: builtins.dict (72ns, 13.9M ops/sec)
+- **Analysis**: 13 of 19 implementations show stable measurements
+
+
+|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|builtins.dict|72|2|13.9M|861|3.3%|
+|_lru.LRU|94|3|10.6M|796|3.0%|
+|cachebox.Cache|129|5|7.8M|836|3.6%|
+|cachebox.LRUCache|138|3|7.3M|856|2.0%|
+|cachebox.FIFOCache|141|6|7.1M|870|4.1%|
+|cachebox.LFUCache|151|8|6.6M|902|5.4%|
+|cachebox.RRCache|165|3|6.1M|849|1.5%|
+|cachetools.Cache|172|10|5.8M|974|5.6%|
+|cachebox.TTLCache|211|9|4.7M|932|4.5%|
+|cachebox.VTTLCache|213|4|4.7M|820|2.1%|
+|cacheing.LRUCache|228|10|4.4M|944|4.3%|
+|cachetools.FIFOCache|248|10|4.0M|901|3.9%|
+|cachetools.LRUCache|250|13|4.0M|941|5.1%|
+|cachetools.LFUCache|276|14|3.6M|921|5.0%|
+|cacheing.LFUCache|294|13|3.4M|942|4.4%|
+|cacheing.RandomCache|309|24|3.2M|945|7.8%|
+|cachetools.RRCache|316|31|3.2M|964|9.7%|
+|cachetools.TTLCache|537|33|1.9M|965|6.1%|
+|cacheing.TTLCache|602|22|1.7M|900|3.7%|
+
+## 📊 Popitem
+
+
+![popitem](photos/popitem.png)
+
+- **Performance Range**: 4023.3x difference between fastest and slowest
+- **Best**: cachebox.LRUCache (887ns, 1.1M ops/sec)
+- **Analysis**: 4 of 16 implementations show stable measurements
+
+
+|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|cachebox.LRUCache|887|153|1.1M|939|17.2%|
+|cachebox.FIFOCache|899|148|1.1M|949|16.4%|
+|_lru.LRU|996|177|1.0M|959|17.7%|
+|cachebox.TTLCache|1,029|144|1.0M|959|14.0%|
+|cacheing.LRUCache|1,245|118|0.8M|919|9.5%|
+|cachetools.FIFOCache|1,682|206|0.6M|962|12.2%|
+|cachetools.LRUCache|1,949|300|0.5M|986|15.4%|
+|cacheing.TTLCache|2,158|270|0.5M|968|12.5%|
+|cacheing.LFUCache|2,178|335|0.5M|970|15.4%|
+|cacheing.RandomCache|2,825|321|0.4M|927|11.4%|
+|cachetools.RRCache|3,137|371|0.3M|962|11.8%|
+|cachebox.RRCache|7,081|3,668|0.1M|998|51.8%|
+|cachetools.LFUCache|13,224|339|0.1M|935|2.6%|
+|cachebox.LFUCache|24,739|701|0.0M|933|2.8%|
+|cachebox.VTTLCache|26,367|554|0.0M|907|2.1%|
+|cachetools.TTLCache|3,567,183|121,611|0.0M|782|3.4%|
+
+## 📊 Hash Collision
+
+
+![hash_collision](photos/hash_collision.png)
+
+- **Performance Range**: 7.2x difference between fastest and slowest
+- **Best**: cachebox.Cache (4394ns, 0.2M ops/sec)
+- **Analysis**: 0 of 19 implementations show stable measurements
+
+
+|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|cachebox.Cache|4,394|2,444|0.2M|1000|55.6%|
+|cachebox.RRCache|4,395|2,442|0.2M|1000|55.6%|
+|cachebox.LFUCache|4,496|2,503|0.2M|999|55.7%|
+|cachebox.LRUCache|4,504|2,493|0.2M|999|55.3%|
+|cachebox.VTTLCache|4,602|2,510|0.2M|999|54.5%|
+|cachebox.FIFOCache|4,825|2,681|0.2M|1000|55.6%|
+|cachebox.TTLCache|4,949|2,708|0.2M|1000|54.7%|
+|builtins.dict|4,996|2,781|0.2M|1000|55.7%|
+|cacheing.RandomCache|5,080|2,781|0.2M|1000|54.7%|
+|_lru.LRU|5,145|2,869|0.2M|1000|55.8%|
+|cachetools.RRCache|9,972|5,558|0.1M|1000|55.7%|
+|cachetools.Cache|10,042|5,514|0.1M|1000|54.9%|
+|cachetools.FIFOCache|10,065|5,703|0.1M|1000|56.7%|
+|cacheing.LRUCache|10,094|5,547|0.1M|1000|55.0%|
+|cacheing.TTLCache|10,655|5,657|0.1M|1000|53.1%|
+|cachetools.LRUCache|20,029|11,498|0.0M|979|57.4%|
+|cachetools.TTLCache|21,014|11,344|0.0M|1000|54.0%|
+|cacheing.LFUCache|26,688|14,823|0.0M|997|55.5%|
+|cachetools.LFUCache|31,750|17,571|0.0M|988|55.3%|
+
+## 🚀 Usage
+
+
+### Prerequisites
 ```bash
-git clone https://github.com/awolverp/cachebox-benchmark
+uv sync
 ```
 
-Install requirements:
+### Run Benchmarks
 ```bash
-pip3 install -U -r requiremenets.txt
+# All benchmarks
+python main.py
+
+# Specific benchmark
+python main.py insertion
+python main.py lookup_existing
 ```
 
-Run benchmark:
-```bash
-python3 main.py
-```
+**Performance Metrics**:
+- **Mean (ns)**: Average execution time in nanoseconds
+- **Ops/sec**: Operations per second (throughput)
+- **Stability**: Measurement consistency (lower noise = more stable)
