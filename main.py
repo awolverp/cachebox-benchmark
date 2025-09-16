@@ -17,7 +17,7 @@ from typing import Dict, List, Any
 from dataclasses import dataclass
 
 # Import optimized benchmark framework
-from bench import benchmark, fixture, SkipError, BenchmarkResult, run_benchmarks
+from bench import benchmark, fixture, SkipError, BenchmarkResult, run_benchmarks, BenchmarkCase
 
 
 # Test configuration constants
@@ -73,9 +73,10 @@ TEST_DATA_COLLISION = TestData.create(COLLISION_OPS)
 class CacheManager:
     """Manages cache instances with proper initialization and cleanup"""
 
-    def __init__(self, cache_type, maxsize: int):
+    def __init__(self, cache_type, maxsize: int, test_data: TestData):
         self.cache_type = cache_type
         self.maxsize = maxsize
+        self.test_data = test_data
         self.instances = []
 
     def create_cache(self) -> Any:
@@ -152,20 +153,18 @@ def cache_impl(cache_type):
         maxsize = STANDARD_CACHE_SIZE
         test_data = TEST_DATA_STANDARD
 
-    manager = CacheManager(cache_type, maxsize)
-    manager.test_data = test_data
+    manager = CacheManager(cache_type, maxsize, test_data)
     return manager
 
 
 @benchmark()
-def insertion(ctx, cache_impl: CacheManager):
+def insertion(ctx: BenchmarkCase, cache_impl: CacheManager):
     """Optimized cache insertion benchmark"""
     test_data = cache_impl.test_data
     ops_count = min(len(test_data.keys), INSERTION_OPS)
 
     # Pre-create cache pool to minimize allocation overhead
     cache_pool = []
-    pool_size = max(10, ops_count // 1000)  # Adaptive pool size
 
     def setup(iteration):
         # Reuse caches from pool, create new ones less frequently
@@ -185,7 +184,7 @@ def insertion(ctx, cache_impl: CacheManager):
             return cache, unique_key, value, SHORT_TTL
         else:
             return cache, unique_key, value, None
-
+    
     def insert_op(n, setup_data):
         """Optimized insertion operation"""
         cache, key, value, ttl = setup_data
@@ -199,7 +198,7 @@ def insertion(ctx, cache_impl: CacheManager):
 
 
 @benchmark()
-def lookup_existing(ctx, cache_impl: CacheManager):
+def lookup_existing(ctx: BenchmarkCase, cache_impl: CacheManager):
     """Optimized existing key lookup benchmark"""
     test_data = cache_impl.test_data
 
@@ -217,13 +216,13 @@ def lookup_existing(ctx, cache_impl: CacheManager):
     def lookup_op(n, setup_data):
         """Optimized lookup operation"""
         cache, key = setup_data
-        result = cache.get(key, None)  # Using .get() for consistency
+        cache.get(key, None)  # Using .get() for consistency
 
     ctx.run(lookup_op, LOOKUP_OPS, setup=setup)
 
 
 @benchmark()
-def lookup_missing(ctx, cache_impl: CacheManager):
+def lookup_missing(ctx: BenchmarkCase, cache_impl: CacheManager):
     """Optimized missing key lookup benchmark"""
     test_data = cache_impl.test_data
 
@@ -239,13 +238,13 @@ def lookup_missing(ctx, cache_impl: CacheManager):
     def lookup_op(n, setup_data):
         """Optimized missing lookup operation"""
         cache, key = setup_data
-        result = cache.get(key, "default")
+        cache.get(key, "default")
 
     ctx.run(lookup_op, LOOKUP_OPS, setup=setup)
 
 
 @benchmark()
-def deletion(ctx, cache_impl: CacheManager):
+def deletion(ctx: BenchmarkCase, cache_impl: CacheManager):
     """Optimized deletion benchmark"""
     if isinstance(cache_impl.cache_type, type) and issubclass(cache_impl.cache_type, dict):
         if cache_impl.cache_type is dict:
@@ -298,16 +297,17 @@ def deletion(ctx, cache_impl: CacheManager):
     def delete_op(n, setup_data):
         """Optimized deletion operation"""
         cache, key = setup_data
+
         try:
             del cache[key]
         except KeyError:
-            pass  # Key might already be deleted
+            pass
 
     ctx.run(delete_op, DELETION_OPS, setup=setup)
 
 
 @benchmark()
-def popitem(ctx, cache_impl: CacheManager):
+def popitem(ctx: BenchmarkCase, cache_impl: CacheManager):
     """Optimized popitem benchmark"""
     # Skip for unlimited caches
     if cache_impl.cache_type in (dict, cachebox.Cache, cachetools.Cache):
@@ -338,23 +338,17 @@ def popitem(ctx, cache_impl: CacheManager):
     def popitem_op(n, setup_data):
         """Optimized popitem operation"""
         cache = setup_data
+        
         try:
             cache.popitem()
         except KeyError:
-            # Cache is empty, add a few items and try again
-            for i in range(5):
-                unique_key = n * 1000 + i
-                if isinstance(cache, cachebox.VTTLCache):
-                    cache.insert(unique_key, i, LONG_TTL)
-                else:
-                    cache[unique_key] = i
-            cache.popitem()
+            pass
 
     ctx.run(popitem_op, 1000, setup=setup)
 
 
 @benchmark()
-def hash_collision(ctx, cache_impl: CacheManager):
+def hash_collision(ctx: BenchmarkCase, cache_impl: CacheManager):
     """Optimized hash collision benchmark"""
     test_data = TEST_DATA_COLLISION
 
@@ -374,7 +368,7 @@ def hash_collision(ctx, cache_impl: CacheManager):
     def collision_lookup_op(n, setup_data):
         """Collision lookup operation"""
         cache, key = setup_data
-        result = cache.get(key)
+        cache.get(key)
 
     ctx.run(collision_lookup_op, COLLISION_OPS, setup=setup)
 
