@@ -45,6 +45,7 @@ dependencies = [
     { name = "lru-dict" },
     { name = "matplotx" },
     { name = "mdutils" },
+    { name = "moka-py" },
     { name = "psutil" },
 ]
 
@@ -56,6 +57,7 @@ requires-dist = [
     { name = "lru-dict", specifier = ">=1.3.0" },
     { name = "matplotx", specifier = ">=0.3.10" },
     { name = "mdutils", specifier = ">=1.8.0" },
+    { name = "moka-py", specifier = ">=0.2.1" },
     { name = "psutil", specifier = ">=7.0.0" },
 ]
 
@@ -306,6 +308,38 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/28/4b/df40d441a280f20fa173f224577fbbb2477851a73736080c89a61ff8a4dd/mdutils-1.8.0.tar.gz", hash = "sha256:091b605b4b550465a304f1c66d37647b6008b4a19e7b5154a7d39a148e903f6d", size = 23909, upload-time = "2025-07-10T19:09:41.194Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9c/6b/d4c6e92daf6123696797e9914e4a3d36e2ba24a2ff1aad00c2d6d2afb82d/mdutils-1.8.0-py3-none-any.whl", hash = "sha256:0d3cf9af4a958f3bbd184c1097985bb1d1f9489887e1f7329942ada14359c7ba", size = 21647, upload-time = "2025-07-10T19:09:40.063Z" },
+]
+
+[[package]]
+name = "moka-py"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ce/4f/b1ad9e961333587db7cf8f2c72d1e86805b1bbd0e4b8f8ebebc85322548f/moka_py-0.2.1.tar.gz", hash = "sha256:edcdf7e36fcf08fac7eac5fa53e8e4061e8e414a1619eb61657927da6d74cae8", size = 30672, upload-time = "2025-09-09T07:25:38.688Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/62/69/109bbe53b5013e95a46865fb724b6a02c228611764648b780cdb969a4e95/moka_py-0.2.1-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:866da462a0412f0a4d02d8c778ec95a16468bc16e6a69012bc2476afd44c8ff5", size = 273295, upload-time = "2025-09-09T07:24:52.583Z" },
+    { url = "https://files.pythonhosted.org/packages/8b/a0/af99d99226cbe2f1093048ac0c90dbc8138e67a47773ce10d3d08990970b/moka_py-0.2.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:a0c50276589752cf54a2e1ef88b4dac7495e36d0ab29bddb7ba7b351aed007c0", size = 253944, upload-time = "2025-09-09T07:24:48.886Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/d4/5a66692200c90e5dacd7a6fe2d269a081837805cf302d22172f0a9899309/moka_py-0.2.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0472213b548842872d2cdfaa32c657a09946703ff76b35d4b0a1a715ef45a0a3", size = 274028, upload-time = "2025-09-09T07:23:47.029Z" },
+    { url = "https://files.pythonhosted.org/packages/72/a2/72738d082c454da2f1bc4fac500f8fdb1593df2d519f0660befefa0931f6/moka_py-0.2.1-cp313-cp313-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:7cd5edfc432db616784eb3493923f68694cf6d3e39346c73ec0ed30f5f46b7c7", size = 297732, upload-time = "2025-09-09T07:23:58.911Z" },
+    { url = "https://files.pythonhosted.org/packages/97/fe/36b8447679998df28cd754e0d9faf7004fa337d2c33ff9d0991707766ad2/moka_py-0.2.1-cp313-cp313-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:91e939b1fe1b375bf4b1f95a35a9acb6b929f79b45ba31fb2d4651142f11f8a0", size = 319924, upload-time = "2025-09-09T07:24:10.544Z" },
+    { url = "https://files.pythonhosted.org/packages/c8/d1/d0c2a1580583ef78ed0ff4b6ef81835a87a52aa16207f57963d39676ce3f/moka_py-0.2.1-cp313-cp313-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:b4ff45f770a5b02b8355ff64229db2c7dcb983f87f5994a6b5e1ff66cb7907ca", size = 330564, upload-time = "2025-09-09T07:24:21.228Z" },
+    { url = "https://files.pythonhosted.org/packages/06/32/e30564532943c142754e25d85058a11c3fe43711e45c7cdbc75d05858098/moka_py-0.2.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0826fe1fbbbc0a787375f99ae0bc047d810312d376a8d687be53a8bcfd33638f", size = 289238, upload-time = "2025-09-09T07:24:40.721Z" },
+    { url = "https://files.pythonhosted.org/packages/33/5f/8420bce36719ecae16326e0b6cf06c1f662dbdca4b41aaa97ca38b621f0e/moka_py-0.2.1-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:6b72e0015bd860436417ab15f07cc412e0e580930dffa14fdf1cb0ad95ee13a5", size = 315418, upload-time = "2025-09-09T07:24:31.218Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/aa/090ed74357a24571649d698d3279436b3028f3ed306e2d0edc078ccdd171/moka_py-0.2.1-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:cc9afc0ca34ae355e01ce238b395a49f08083a8c08ca2fe92a40a8c0d1c41ba6", size = 453885, upload-time = "2025-09-09T07:24:57.605Z" },
+    { url = "https://files.pythonhosted.org/packages/a0/14/313eacad11efca2bf67d0a0def0b53c1d0a8483d0ea836407cf975b5d357/moka_py-0.2.1-cp313-cp313-musllinux_1_2_armv7l.whl", hash = "sha256:70fbfac4db0a4ca42104f7134d3905f401d422c96325e355e2f1a804f7d72aa1", size = 562426, upload-time = "2025-09-09T07:25:08.616Z" },
+    { url = "https://files.pythonhosted.org/packages/4c/9f/69655d84973188e55d09334416165a7807072d405183ad97b20b633ef065/moka_py-0.2.1-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:f6ed667303f05000c0e716deda9d4e1d133c691fa81f5bfd38b1bbb258d58105", size = 493111, upload-time = "2025-09-09T07:25:19.937Z" },
+    { url = "https://files.pythonhosted.org/packages/1d/eb/99a0fc387e028f1398189293598d111dca53a6c2758e7145fbea20165340/moka_py-0.2.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:bb8a159fd10f1cff320f841022dad7c98faa2f3b4d5404eef55a133f423e5dd5", size = 460476, upload-time = "2025-09-09T07:25:31.417Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/b6/e15ea537d8cfe71924c87910b755269c183080238c66e3b4a533ecc617fb/moka_py-0.2.1-cp313-cp313-win32.whl", hash = "sha256:65e4e742ec79d47297d1a58da7ed8200953c691e49b669de9da6e887fb12b348", size = 190208, upload-time = "2025-09-09T07:25:49.121Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/cc/0bc8dfb0075635663b4e2d3a27e2a07dd532ceb9064acd35dd1b66cd5975/moka_py-0.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:f8b16855ef0a8b26972b534ed9a6f785bbeb2d998481a2a11a41b94be491fbdb", size = 190057, upload-time = "2025-09-09T07:25:42.949Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/f3/ed79afc5796fac0ce88f3b69f64715c8b30cd927169227578b9121ac36e2/moka_py-0.2.1-cp313-cp313t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e2c69d233d3e6c03bc183a15d31cb92aab9b99ba36c0dd519f1d57c99a9684e1", size = 270484, upload-time = "2025-09-09T07:23:48.105Z" },
+    { url = "https://files.pythonhosted.org/packages/4f/a7/b9e371e062c14fc46519113a861a33cfa145c76878ae8f958025e181e3cc/moka_py-0.2.1-cp313-cp313t-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:11c7f7e247641d4d9af48fc0a1c6539302017a3b4c86887a30703ddc3e29cc24", size = 295506, upload-time = "2025-09-09T07:23:59.961Z" },
+    { url = "https://files.pythonhosted.org/packages/c9/0f/547fe43c9c0776eb9059d9f447985acd64f8248aa9efed6f07683656af00/moka_py-0.2.1-cp313-cp313t-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:61d6f76b149e3d6523df3976e380256ec6ab579aebf94eaf7883a424a2126d29", size = 316311, upload-time = "2025-09-09T07:24:11.529Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/ee/10abb08ec9b4e09ab352e00be534542962c32aabb072d27437822cc869b8/moka_py-0.2.1-cp313-cp313t-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:5ea9882cadc52148cfbddfffc38bb88461f248fb9bf58f5d5e60822d875f16eb", size = 328289, upload-time = "2025-09-09T07:24:22.324Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/30/5a060d7defe908f13915b52c917c76106b499d43cb7ff08869a1bdfdd6d6/moka_py-0.2.1-cp313-cp313t-musllinux_1_2_aarch64.whl", hash = "sha256:ae08bbfe150fe8e76876ed7b3a23f2e643fdeaefaa8305926914c80dcccdf66c", size = 449964, upload-time = "2025-09-09T07:24:58.692Z" },
+    { url = "https://files.pythonhosted.org/packages/8d/91/90eafed2dc3bd855689558ea8b92e17d87ca0569cf85b87dae37ccce316e/moka_py-0.2.1-cp313-cp313t-musllinux_1_2_armv7l.whl", hash = "sha256:d9f6aca9db34be5ef6d6e017259c6d84120844ca46ec440c3b7e2bbf65c56d7e", size = 560233, upload-time = "2025-09-09T07:25:09.713Z" },
+    { url = "https://files.pythonhosted.org/packages/83/f8/36ed100bb9bec045ae50b15cc2edbb8dff0a0310833385573c5aadf2ec90/moka_py-0.2.1-cp313-cp313t-musllinux_1_2_i686.whl", hash = "sha256:e340c5bd22ab452fe0b22a1fe681ac01b17dac468f2b290bad196230454e0c05", size = 489678, upload-time = "2025-09-09T07:25:21.015Z" },
+    { url = "https://files.pythonhosted.org/packages/69/91/da174e4736a4f3ee33e187df02c615bf29d6f42e54e8641e4c554fea7124/moka_py-0.2.1-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:45efecde0313cf578cda4a28041dc2f3fba1bc2a0e8567a60e21e13f2b203892", size = 457368, upload-time = "2025-09-09T07:25:32.863Z" },
+    { url = "https://files.pythonhosted.org/packages/45/96/b3c6ffd073d7f4661ebef15dc63d675369dfa73da9925a551edc1ebfdfb6/moka_py-0.2.1-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f72dff94f29daec5c33880a110ca807f23ca18ca7e249ca0c914960a208b4526", size = 289051, upload-time = "2025-09-09T07:24:41.754Z" },
+    { url = "https://files.pythonhosted.org/packages/71/6f/ff434906d410bc5832608407d8a13cc8b8e35b1fb8ea596806cf61cd058c/moka_py-0.2.1-cp314-cp314-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:5f48b323252f7aef5cc127986ecc2c5178e06a7580d50f8e7ae2ab9a9254bbc9", size = 315504, upload-time = "2025-09-09T07:24:32.675Z" },
 ]
 
 [[package]]

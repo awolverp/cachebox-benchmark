@@ -8,6 +8,7 @@ import matplotx
 import cachetools
 import cacheing
 import cachebox
+import moka_py
 import lru
 import mdutils
 import sys
@@ -83,6 +84,7 @@ class CacheManager:
         """Create a new cache instance with proper parameters"""
         if self.cache_type is dict:
             cache = dict()
+
         elif self.cache_type in (cachebox.TTLCache, cachetools.TTLCache, cacheing.TTLCache):
             cache = self.cache_type(self.maxsize, SHORT_TTL)
         else:
@@ -105,6 +107,8 @@ class CacheManager:
 
             if isinstance(cache, cachebox.VTTLCache):
                 cache.insert(key, value, ttl_value)
+            elif isinstance(cache, moka_py.Moka):
+                cache.set(key, value)
             else:
                 cache[key] = value
 
@@ -118,6 +122,11 @@ class CacheManager:
             except:
                 pass
         self.instances.clear()
+
+
+class LRUMoka:
+    def __new__(cls, capacity):
+        return moka_py.Moka(capacity, policy="lru")
 
 
 @fixture(
@@ -141,7 +150,32 @@ class CacheManager:
         cachetools.TTLCache,
         cacheing.TTLCache,
         cachebox.VTTLCache,
+        moka_py.Moka,
+        LRUMoka,
     ],
+    ids=[
+        "dict",
+        "cachebox.Cache",
+        "cachetools.Cache",
+        "cachebox.FIFOCache",
+        "cachetools.FIFOCache",
+        "cachebox.LRUCache",
+        "cachetools.LRUCache",
+        "lru.LRU",
+        "cacheing.LRUCache",
+        "cachebox.LFUCache",
+        "cacheing.LFUCache",
+        "cachetools.LFUCache",
+        "cachebox.RRCache",
+        "cacheing.RandomCache",
+        "cachetools.RRCache",
+        "cachebox.TTLCache",
+        "cachetools.TTLCache",
+        "cacheing.TTLCache",
+        "cachebox.VTTLCache",
+        "moka_py.Moka",
+        "moka_py.Moka (lru)",
+    ]
 )
 def cache_impl(cache_type):
     """Create cache implementation manager"""
@@ -185,13 +219,21 @@ def insertion(ctx: BenchmarkCase, cache_impl: CacheManager):
         else:
             return cache, unique_key, value, None
     
-    def insert_op(n, setup_data):
-        """Optimized insertion operation"""
-        cache, key, value, ttl = setup_data
+    if cache_impl.cache_type in (moka_py.Moka, LRUMoka):
+        def insert_op(n, setup_data):
+            cache, key, value, _ = setup_data
+            cache.set(key, value)
 
-        if ttl is not None:
+    elif cache_impl.cache_type is cachebox.VTTLCache:
+        def insert_op(n, setup_data):
+            """Optimized insertion operation"""
+            cache, key, value, ttl = setup_data
             cache.insert(key, value, ttl)
-        else:
+            
+    else:
+        def insert_op(n, setup_data):
+            """Optimized insertion operation"""
+            cache, key, value, _ = setup_data
             cache[key] = value
 
     ctx.run(insert_op, ops_count, setup=setup)
@@ -280,6 +322,8 @@ def deletion(ctx: BenchmarkCase, cache_impl: CacheManager):
 
                 if isinstance(cache, cachebox.VTTLCache):
                     cache.insert(key, value, LONG_TTL)
+                elif isinstance(cache, moka_py.Moka):
+                    cache.set(key, value)
                 else:
                     cache[key] = value
 
@@ -294,14 +338,25 @@ def deletion(ctx: BenchmarkCase, cache_impl: CacheManager):
 
         return cache, key
 
-    def delete_op(n, setup_data):
-        """Optimized deletion operation"""
-        cache, key = setup_data
+    if cache_impl.cache_type in (moka_py.Moka, LRUMoka):
+        def delete_op(n, setup_data):
+            """Optimized deletion operation"""
+            cache, key = setup_data
 
-        try:
-            del cache[key]
-        except KeyError:
-            pass
+            try:
+                cache.remove(key)
+            except KeyError:
+                pass
+        
+    else:
+        def delete_op(n, setup_data):
+            """Optimized deletion operation"""
+            cache, key = setup_data
+
+            try:
+                del cache[key]
+            except KeyError:
+                pass
 
     ctx.run(delete_op, DELETION_OPS, setup=setup)
 
@@ -310,8 +365,8 @@ def deletion(ctx: BenchmarkCase, cache_impl: CacheManager):
 def popitem(ctx: BenchmarkCase, cache_impl: CacheManager):
     """Optimized popitem benchmark"""
     # Skip for unlimited caches
-    if cache_impl.cache_type in (dict, cachebox.Cache, cachetools.Cache):
-        raise SkipError("Unlimited caches don't need popitem testing")
+    if cache_impl.cache_type in (dict, cachebox.Cache, cachetools.Cache, moka_py.Moka, LRUMoka):
+        raise SkipError("don't need popitem testing")
 
     test_data = cache_impl.test_data
 
@@ -357,6 +412,8 @@ def hash_collision(ctx: BenchmarkCase, cache_impl: CacheManager):
     for i, bad_key in enumerate(test_data.bad_hash_keys):
         if isinstance(cache, cachebox.VTTLCache):
             cache.insert(bad_key, i, LONG_TTL)
+        elif isinstance(cache, moka_py.Moka):
+            cache.set(bad_key, i)
         else:
             cache[bad_key] = i
 
@@ -531,7 +588,6 @@ def generate_comprehensive_report(all_results: Dict[str, List[BenchmarkResult]])
         file.new_paragraph(
             f"- **Performance Range**: {performance_range:.1f}x difference between fastest and slowest\n"
             f"- **Best**: {fastest.name.split('-')[-1]} ({fastest.mean_ns:.0f}ns, {fastest.ops_per_sec / 1e6:.1f}M ops/sec)\n"
-            f"- **Analysis**: {len([r for r in results if r.is_stable])} of {len(results)} implementations show stable measurements\n\n"
         )
 
         # Detailed table
@@ -542,7 +598,6 @@ def generate_comprehensive_report(all_results: Dict[str, List[BenchmarkResult]])
             "Ops/sec",
             "Samples",
             "Stability",
-            "Grade",
         ]
         table_rows = [] # type: list[list[str]]
 
@@ -551,9 +606,6 @@ def generate_comprehensive_report(all_results: Dict[str, List[BenchmarkResult]])
 
         for result in sorted_results:
             impl_name = result.name.split("-")[-1]
-            stability_emoji = (
-                "🟢" if result.noise_ratio < 0.02 else "🟡" if result.noise_ratio < 0.05 else "🔴"
-            )
 
             table_rows.append(
                 [
@@ -563,7 +615,6 @@ def generate_comprehensive_report(all_results: Dict[str, List[BenchmarkResult]])
                     f"{result.ops_per_sec / 1e6:.1f}M",
                     str(result.samples),
                     f"{result.noise_ratio * 100:.1f}%",
-                    f"{stability_emoji} {result.stability_grade}",
                 ]
             )
         
