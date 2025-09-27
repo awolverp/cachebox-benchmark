@@ -184,37 +184,6 @@ If you know other library, tell me to add it to this page.
 |cachebox.VTTLCache|25,800|618|0.0M|930|2.4%|
 |cachetools.TTLCache|3,710,013|134,464|0.0M|790|3.6%|
 
-## 📊 Hash Collision
-
-
-![hash_collision](photos/hash_collision.png)
-
-- **Performance Range**: 7.3x difference between fastest and slowest
-- **Best**: cachebox.Cache (4447ns, 0.2M ops/sec)
-
-
-|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
-| :---: | :---: | :---: | :---: | :---: | :---: |
-|cachebox.Cache|4,447|2,479|0.2M|1000|55.7%|
-|cachebox.RRCache|4,450|2,485|0.2M|1000|55.8%|
-|cachebox.LFUCache|4,558|2,539|0.2M|999|55.7%|
-|cachebox.LRUCache|4,585|2,553|0.2M|999|55.7%|
-|cachebox.VTTLCache|4,680|2,575|0.2M|999|55.0%|
-|cachebox.FIFOCache|4,806|2,668|0.2M|1000|55.5%|
-|cachebox.TTLCache|4,942|2,705|0.2M|1000|54.7%|
-|dict|5,043|32|0.2M|98|0.6%|
-|cacheing.RandomCache|5,090|2,848|0.2M|1000|56.0%|
-|lru.LRU|5,099|2,810|0.2M|1000|55.1%|
-|cachetools.FIFOCache|10,049|5,655|0.1M|1000|56.3%|
-|cachetools.Cache|10,057|5,634|0.1M|1000|56.0%|
-|cachetools.RRCache|10,105|5,711|0.1M|1000|56.5%|
-|cacheing.LRUCache|10,213|5,682|0.1M|1000|55.6%|
-|cacheing.TTLCache|10,846|5,737|0.1M|1000|52.9%|
-|cachetools.LRUCache|20,225|11,354|0.0M|1000|56.1%|
-|cachetools.TTLCache|21,336|11,481|0.0M|1000|53.8%|
-|cacheing.LFUCache|26,792|14,938|0.0M|997|55.8%|
-|cachetools.LFUCache|32,492|17,904|0.0M|1000|55.1%|
-
 
 ## 📊 Hash Collision
 
