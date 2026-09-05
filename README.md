@@ -1,237 +1,310 @@
 # Caching libraries Benchmarks
 
-
 According to my new library [cachebox](https://github.com/awolverp/cachebox), I decided to benchmark caching libraries
 which are I know, to show the power of [cachebox](https://github.com/awolverp/cachebox) ...
 
 If you know other library, tell me to add it to this page.
 
 > [!NOTE]\
-> The `cacheing.VTTLCache` class was excluded from the benchmark because of numerous unreasonable errors.
+> The `cacheing.VTTLCache` class was excluded from the benchmark because assigning a key raises `TypeError`.
 
+## Methodology
+
+Times are **from Python**: each sample is a calibrated inner loop around a single API call (`set` / `get` / `delete` / `popitem`). Setup and teardown are not timed. GC is collected before each sample and disabled during the timed region.
+
+Reported values are the **median** ns/op (tables ranked by median), plus mean, stdev, MAD, ops/sec, sample count, and coefficient of variation. Outliers are **not** dropped. A result is flagged when CV > 10% or max > 1.5× mean.
+
+All implementations use the same working set (`maxsize = 4096`, integer keys/values). TTL caches are constructed with a 3600s TTL so nothing expires during a sample. `dict`, `cachebox.Cache`, and `cachetools.Cache` have no eviction policy and are skipped on eviction cases.
+
+| Case                       | What is measured                                                      |
+| -------------------------- | --------------------------------------------------------------------- |
+| Set new (no eviction)      | Insert keys that are not present and do not evict (cache ~25% full).  |
+| Set at capacity (eviction) | Insert new keys into a cache already at maxsize.                      |
+| Lookup existing            | `get` of a present key (LRU/LFU recency/frequency updates included).  |
+| Lookup missing             | `get` of a missing key.                                               |
+| Deletion                   | Delete present keys (one delete per populated key, then a new cache). |
+| Popitem                    | `popitem()` on a cache filled to maxsize.                             |
+| Hash collision             | `get` of keys whose `hash()` is always 42.                            |
+
+moka-py is a concurrent Rust cache measured **single-threaded** like the others.
 
 ## 🖥️ System Information
-- **Platform**: Linux-6.18.12-1-MANJARO-x86_64-with-glibc2.43
-- **Python**: 3.14.3
-- **Processor**: 
+
+- **Platform**: Linux-7.2.3-arch1-2-x86_64-with-glibc2.44
+- **Python**: 3.14.7
+- **Processor**: 11th Gen Intel(R) Core(TM) i3-1115G4 @ 3.00GHz
+- **Timer**: resolution 652.0 ns, overhead 42.0 ns
+- **Run**: min-time 100 ms/sample, warmup 1, samples 25, isolated=no, fast=no, pin-cpu=off, nice=False
+- **Hash seed**: unset (isolated workers use 0 except the collision case)
+- **GC**: disabled during the timed loop; collected before each sample
+- **Threading**: single-threaded (including moka-py)
 - **Libraries**:
-  - cachebox: 6.0.0
-  - cachetools: 7.1.4
+  - cachebox: 6.2.7
+  - cachetools: 7.1.8
   - cacheing: 0.1.1
-  - lru-dict: 1.3.0
+  - lru-dict: 1.4.1
+  - moka-py: 0.5.0
 
-## 📊 Insertion
+## 📊 Set new (no eviction)
 
+Insert keys that do not exist and do not trigger eviction. Cache is pre-filled to 25% of maxsize.
 
-![insertion](photos/insertion.png)
+![set_new](photos/set_new.png)
 
-- **Performance Range**: 15.5x difference between fastest and slowest
-- **Best**: dict (72ns, 13.9M ops/sec)
+- **Range**: 42.9× between fastest and slowest (median)
+- **Best**: dict (70 ns, 14.1M ops/sec)
 
-|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
-| :---: | :---: | :---: | :---: | :---: | :---: |
-|dict|72|1|13.9M|97|1.5%|
-|lru.LRU|78|2|12.8M|97|2.2%|
-|cachebox.RRCache|93|2|10.7M|98|2.1%|
-|cachebox.LFUCache|94|2|10.7M|91|1.9%|
-|cachebox.Cache|94|2|10.6M|89|2.1%|
-|cachebox.LRUCache|94|2|10.6M|87|2.0%|
-|cachebox.FIFOCache|95|2|10.5M|99|1.8%|
-|cachebox.TTLCache|162|41|6.2M|907|25.2%|
-|cacheing.RandomCache|266|24|3.8M|859|9.1%|
-|cacheing.LRUCache|294|13|3.4M|863|4.5%|
-|cachetools.Cache|297|13|3.4M|883|4.3%|
-|cacheing.LFUCache|320|21|3.1M|832|6.4%|
-|cachetools.FIFOCache|379|15|2.6M|873|3.9%|
-|cachetools.RRCache|396|27|2.5M|861|6.9%|
-|cachetools.LFUCache|401|17|2.5M|815|4.1%|
-|cachebox.VTTLCache|422|79|2.4M|944|18.7%|
-|moka_py.Moka (lru)|488|145|2.1M|951|29.6%|
-|cachetools.LRUCache|564|21|1.8M|871|3.8%|
-|moka_py.Moka|565|300|1.8M|932|53.1%|
-|cacheing.TTLCache|986|43|1.0M|854|4.4%|
-|cachetools.TTLCache|1,117|56|0.9M|861|5.0%|
+|    Implementation    | Median (ns) | Mean (ns) | Stdev | MAD | Ops/sec | Samples |    CV |
+| :------------------: | ----------: | --------: | ----: | --: | ------: | ------: | ----: |
+|         dict         |        69.6 |      71.1 |   4.2 | 0.5 |   14.1M |      25 |  5.8% |
+|    cachebox.Cache    |        86.7 |      87.4 |   4.0 | 0.9 |   11.4M |     200 |  4.5% |
+|   cachebox.RRCache   |        93.2 |      94.3 |   8.4 | 0.9 |   10.6M |     200 |  8.9% |
+|  cachebox.FIFOCache  |        94.0 |      95.1 |   7.8 | 0.9 |   10.5M |     200 |  8.2% |
+|  cachebox.LRUCache   |       126.6 |     127.2 |   2.6 | 1.4 |    7.9M |     200 |  2.0% |
+|  cachebox.LFUCache   |       128.4 |     129.2 |   3.7 | 1.2 |    7.7M |     200 |  2.9% |
+|  cachebox.TTLCache   |       139.8 |     140.2 |   2.1 | 1.1 |    7.1M |     200 |  1.5% |
+|       lru.LRU        |       157.7 |     158.8 |   8.8 | 1.3 |    6.3M |     200 |  5.5% |
+| cacheing.RandomCache |       285.1 |     290.4 |  33.9 | 1.7 |    3.4M |     200 | 11.7% |
+|   cachetools.Cache   |       293.4 |     297.5 |  14.8 | 1.8 |    3.4M |     200 |  5.0% |
+|  cacheing.LRUCache   |       322.0 |     323.0 |   4.6 | 1.5 |    3.1M |     200 |  1.4% |
+|  cacheing.LFUCache   |       324.7 |     328.8 |  15.8 | 1.9 |    3.0M |     200 |  4.8% |
+|     moka_py.Moka     |       396.5 |     397.9 |  12.0 | 2.2 |    2.5M |     200 |  3.0% |
+| cachetools.LFUCache  |       400.4 |     402.5 |   6.6 | 1.7 |    2.5M |     200 |  1.6% |
+|  moka_py.Moka (lru)  |       403.4 |     405.1 |  10.0 | 2.2 |    2.5M |     200 |  2.5% |
+| cachetools.FIFOCache |       407.6 |     409.1 |  11.4 | 2.3 |    2.4M |     200 |  2.8% |
+|  cachetools.RRCache  |       412.6 |     420.7 |  29.6 | 2.6 |    2.4M |     200 |  7.0% |
+| cachetools.LRUCache  |       606.0 |     617.2 |  24.4 | 5.6 |    1.6M |     200 |  4.0% |
+|  cacheing.TTLCache   |       988.8 |     994.6 |  21.6 | 7.4 |    1.0M |     200 |  2.2% |
+| cachetools.TTLCache  |     1,118.8 |   1,129.9 |  83.7 | 5.1 |    0.9M |     200 |  7.4% |
+|  cachebox.VTTLCache  |     2,987.5 |   3,020.8 | 298.7 | 2.7 |    0.3M |     200 |  9.9% |
 
-## 📊 Lookup Existing
+## 📊 Set at capacity (eviction)
 
+Insert new keys into a cache already at maxsize so each set evicts an entry.
 
-![lookup_existing](photos/lookup_existing.png)
+![set_evict](photos/set_evict.png)
 
-- **Performance Range**: 13.6x difference between fastest and slowest
-- **Best**: dict (73ns, 13.7M ops/sec)
+- **Range**: 49.7× between fastest and slowest (median)
+- **Best**: cachebox.LRUCache (105 ns, 9.5M ops/sec)
 
-|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
-| :---: | :---: | :---: | :---: | :---: | :---: |
-|dict|73|1|13.7M|97|1.4%|
-|cachebox.Cache|83|5|12.1M|823|6.2%|
-|cachebox.RRCache|92|1|10.9M|95|1.4%|
-|cachebox.LFUCache|93|1|10.8M|89|1.3%|
-|cachebox.LRUCache|93|1|10.8M|94|1.3%|
-|cachebox.FIFOCache|94|1|10.6M|85|1.2%|
-|cacheing.RandomCache|105|10|9.5M|911|9.9%|
-|lru.LRU|125|8|8.0M|788|6.0%|
-|cachetools.RRCache|154|10|6.5M|894|6.6%|
-|cachetools.Cache|155|11|6.5M|905|7.3%|
-|cachetools.FIFOCache|157|11|6.4M|906|7.0%|
-|cachebox.VTTLCache|173|66|5.8M|956|38.2%|
-|cachebox.TTLCache|174|79|5.8M|985|45.3%|
-|cacheing.LRUCache|191|12|5.2M|806|6.1%|
-|cachetools.LRUCache|306|14|3.3M|851|4.4%|
-|cacheing.LFUCache|315|15|3.2M|866|4.9%|
-|moka_py.Moka (lru)|341|164|2.9M|940|48.0%|
-|moka_py.Moka|349|167|2.9M|951|47.9%|
-|cachetools.LFUCache|392|15|2.6M|877|3.8%|
-|cacheing.TTLCache|681|28|1.5M|893|4.1%|
-|cachetools.TTLCache|994|57|1.0M|951|5.7%|
+|    Implementation    | Median (ns) | Mean (ns) | Stdev |  MAD | Ops/sec | Samples |    CV |
+| :------------------: | ----------: | --------: | ----: | ---: | ------: | ------: | ----: |
+|  cachebox.LRUCache   |       104.5 |     105.0 |   3.1 |  1.3 |    9.5M |     200 |  2.9% |
+|  cachebox.FIFOCache  |       108.4 |     110.2 |  12.0 |  1.0 |    9.1M |     200 | 10.9% |
+|  cachebox.TTLCache   |       152.1 |     152.9 |   5.7 |  1.0 |    6.5M |     200 |  3.7% |
+|       lru.LRU        |       185.1 |     185.3 |   2.2 |  1.1 |    5.4M |     200 |  1.2% |
+|  cacheing.LRUCache   |       572.2 |     579.7 |  22.3 |  3.7 |    1.7M |     200 |  3.8% |
+|     moka_py.Moka     |       676.0 |     685.4 |  27.6 |  6.1 |    1.5M |     200 |  4.0% |
+|  cacheing.LFUCache   |       732.7 |     739.6 |  22.7 |  7.6 |    1.4M |     200 |  3.1% |
+|  moka_py.Moka (lru)  |       748.2 |     752.5 |  21.4 |  3.4 |    1.3M |     200 |  2.8% |
+| cachetools.FIFOCache |       899.1 |     902.2 |  14.5 |  3.0 |    1.1M |     186 |  1.6% |
+| cacheing.RandomCache |       993.2 |   1,010.2 |  69.7 |  6.7 |    1.0M |     167 |  6.9% |
+|  cachetools.RRCache  |     1,209.7 |   1,224.0 |  46.1 | 27.2 |    0.8M |     136 |  3.8% |
+|   cachebox.RRCache   |     1,243.3 |   1,321.6 | 299.4 |  8.4 |    0.8M |     200 | 22.7% |
+| cachetools.LRUCache  |     1,258.7 |   1,285.2 |  74.5 |  9.0 |    0.8M |     140 |  5.8% |
+|  cacheing.TTLCache   |     1,392.0 |   1,402.8 |  27.9 | 11.7 |    0.7M |     124 |  2.0% |
+| cachetools.LFUCache  |     2,544.2 |   2,563.9 |  49.7 | 17.8 |    0.4M |     135 |  1.9% |
+| cachetools.TTLCache  |     3,116.0 |   3,140.3 |  57.6 | 26.7 |    0.3M |      83 |  1.8% |
+|  cachebox.LFUCache   |     4,024.0 |   3,977.8 |  98.4 | 97.1 |    0.3M |     100 |  2.5% |
+|  cachebox.VTTLCache  |     5,193.4 |   5,140.3 | 149.8 | 93.6 |    0.2M |      86 |  2.9% |
 
-## 📊 Lookup Missing
+Skipped: `dict` (no eviction policy), `cachebox.Cache` (no eviction policy), `cachetools.Cache` (no eviction policy)
 
+## 📊 Lookup existing
 
-![lookup_missing](photos/lookup_missing.png)
+Look up keys that are in the cache. LRU/LFU recency or frequency updates are part of the API cost.
 
-- **Performance Range**: 61.8x difference between fastest and slowest
-- **Best**: dict (76ns, 13.2M ops/sec)
+![get_hit](photos/get_hit.png)
 
-|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
-| :---: | :---: | :---: | :---: | :---: | :---: |
-|dict|76|1|13.2M|85|1.4%|
-|cachetools.FIFOCache|120|8|8.3M|866|6.7%|
-|cachetools.LFUCache|120|8|8.3M|872|7.0%|
-|cachetools.LRUCache|120|8|8.3M|871|7.0%|
-|cachetools.RRCache|122|10|8.2M|897|7.9%|
-|cachetools.Cache|125|12|8.0M|899|9.5%|
-|lru.LRU|188|12|5.3M|871|6.5%|
-|moka_py.Moka|332|149|3.0M|940|44.7%|
-|moka_py.Moka (lru)|341|156|2.9M|940|45.8%|
-|cacheing.RandomCache|467|16|2.1M|861|3.4%|
-|cacheing.LFUCache|574|18|1.7M|811|3.1%|
-|cachetools.TTLCache|653|22|1.5M|887|3.4%|
-|cacheing.LRUCache|715|20|1.4M|882|2.8%|
-|cachebox.Cache|1,012|394|1.0M|867|39.0%|
-|cacheing.TTLCache|1,697|37|0.6M|918|2.2%|
-|cachebox.RRCache|3,842|96|0.3M|882|2.5%|
-|cachebox.VTTLCache|4,146|107|0.2M|913|2.6%|
-|cachebox.LRUCache|4,166|133|0.2M|892|3.2%|
-|cachebox.LFUCache|4,206|143|0.2M|943|3.4%|
-|cachebox.TTLCache|4,639|111|0.2M|979|2.4%|
-|cachebox.FIFOCache|4,683|125|0.2M|926|2.7%|
+- **Range**: 12.4× between fastest and slowest (median)
+- **Best**: dict (80 ns, 12.5M ops/sec)
+
+|    Implementation    | Median (ns) | Mean (ns) | Stdev | MAD | Ops/sec | Samples |   CV |
+| :------------------: | ----------: | --------: | ----: | --: | ------: | ------: | ---: |
+|         dict         |        79.8 |      80.1 |   0.7 | 0.2 |   12.5M |      25 | 0.9% |
+|   cachebox.RRCache   |        86.1 |      86.2 |   0.4 | 0.2 |   11.6M |      25 | 0.4% |
+|    cachebox.Cache    |        87.2 |      87.2 |   0.3 | 0.2 |   11.5M |      25 | 0.4% |
+|  cachebox.LFUCache   |        90.6 |      91.0 |   1.6 | 0.2 |   11.0M |      25 | 1.8% |
+|  cachebox.FIFOCache  |        91.5 |      91.9 |   1.2 | 0.3 |   10.9M |      25 | 1.3% |
+|  cachebox.LRUCache   |        93.7 |      94.0 |   1.3 | 0.6 |   10.6M |      25 | 1.4% |
+| cacheing.RandomCache |       106.0 |     106.4 |   1.1 | 0.4 |    9.4M |      25 | 1.0% |
+|  cachebox.VTTLCache  |       118.2 |     118.4 |   0.8 | 0.2 |    8.4M |      25 | 0.6% |
+|  cachebox.TTLCache   |       123.3 |     123.8 |   1.9 | 0.4 |    8.1M |      25 | 1.5% |
+|       lru.LRU        |       128.9 |     129.0 |   0.6 | 0.2 |    7.8M |      25 | 0.4% |
+|   cachetools.Cache   |       168.9 |     169.3 |   1.4 | 0.4 |    5.9M |      25 | 0.8% |
+|  cachetools.RRCache  |       169.0 |     169.3 |   1.0 | 0.4 |    5.9M |      25 | 0.6% |
+| cachetools.FIFOCache |       169.4 |     170.1 |   2.2 | 0.3 |    5.9M |      25 | 1.3% |
+|  cacheing.LRUCache   |       197.7 |     198.4 |   3.0 | 0.5 |    5.0M |      25 | 1.5% |
+|  moka_py.Moka (lru)  |       231.8 |     233.5 |   5.2 | 0.2 |    4.3M |      25 | 2.2% |
+|     moka_py.Moka     |       240.5 |     241.5 |   2.6 | 0.2 |    4.1M |      25 | 1.1% |
+| cachetools.LRUCache  |       337.6 |     341.5 |   8.3 | 0.3 |    2.9M |      25 | 2.4% |
+|  cacheing.LFUCache   |       365.1 |     364.7 |   6.6 | 3.2 |    2.7M |      25 | 1.8% |
+| cachetools.LFUCache  |       444.0 |     446.3 |   4.3 | 1.3 |    2.2M |      25 | 1.0% |
+|  cacheing.TTLCache   |       700.5 |     702.9 |   4.3 | 1.3 |    1.4M |      25 | 0.6% |
+| cachetools.TTLCache  |       991.6 |     992.9 |   7.8 | 2.2 |    1.0M |      25 | 0.8% |
+
+## 📊 Lookup missing
+
+Look up keys that are not in a populated cache (mapping.get with default None).
+
+![get_miss](photos/get_miss.png)
+
+- **Range**: 20.7× between fastest and slowest (median)
+- **Best**: dict (82 ns, 12.2M ops/sec)
+
+|    Implementation    | Median (ns) | Mean (ns) | Stdev |  MAD | Ops/sec | Samples |   CV |
+| :------------------: | ----------: | --------: | ----: | ---: | ------: | ------: | ---: |
+|         dict         |        81.7 |      81.9 |   1.1 |  0.3 |   12.2M |      25 | 1.3% |
+| cachetools.LFUCache  |       131.6 |     131.6 |   0.9 |  0.5 |    7.6M |      25 | 0.7% |
+|  cachetools.RRCache  |       131.6 |     133.1 |   2.8 |  0.5 |    7.5M |      25 | 2.1% |
+| cachetools.LRUCache  |       133.3 |     134.5 |   2.3 |  0.9 |    7.4M |      25 | 1.7% |
+|   cachetools.Cache   |       133.6 |     134.8 |   2.2 |  1.1 |    7.4M |      25 | 1.6% |
+| cachetools.FIFOCache |       135.1 |     135.2 |   2.1 |  0.4 |    7.4M |      25 | 1.6% |
+|  moka_py.Moka (lru)  |       174.7 |     175.0 |   3.2 |  3.0 |    5.7M |      25 | 1.8% |
+|     moka_py.Moka     |       186.5 |     185.6 |   4.2 |  3.2 |    5.4M |      25 | 2.3% |
+|       lru.LRU        |       199.8 |     201.7 |   5.7 |  0.6 |    5.0M |      25 | 2.8% |
+| cacheing.RandomCache |       493.3 |     495.3 |   9.7 |  3.6 |    2.0M |      25 | 2.0% |
+|  cacheing.LFUCache   |       577.7 |     581.0 |  11.0 |  2.4 |    1.7M |      25 | 1.9% |
+| cachetools.TTLCache  |       676.0 |     676.0 |  10.7 |  5.1 |    1.5M |      25 | 1.6% |
+|  cacheing.LRUCache   |       697.7 |     700.8 |   8.8 |  0.6 |    1.4M |      25 | 1.2% |
+|   cachebox.RRCache   |     1,082.5 |   1,088.8 |  16.5 |  6.4 |    0.9M |      25 | 1.5% |
+|    cachebox.Cache    |     1,087.8 |   1,092.6 |  13.4 |  2.8 |    0.9M |      25 | 1.2% |
+|  cachebox.VTTLCache  |     1,166.0 |   1,171.4 |  12.1 |  2.2 |    0.9M |      25 | 1.0% |
+|  cachebox.LRUCache   |     1,175.5 |   1,180.6 |  10.8 |  4.8 |    0.8M |      25 | 0.9% |
+|  cachebox.LFUCache   |     1,180.3 |   1,183.0 |   8.0 |  4.0 |    0.8M |      25 | 0.7% |
+|  cachebox.TTLCache   |     1,332.6 |   1,339.2 |  15.8 |  3.8 |    0.7M |      25 | 1.2% |
+|  cachebox.FIFOCache  |     1,349.4 |   1,354.0 |   9.6 |  3.5 |    0.7M |      25 | 0.7% |
+|  cacheing.TTLCache   |     1,687.7 |   1,689.5 |  29.9 | 14.3 |    0.6M |      25 | 1.8% |
 
 ## 📊 Deletion
 
+Delete keys that exist. Each sample populates maxsize entries and deletes them once.
 
-![deletion](photos/deletion.png)
+![delete](photos/delete.png)
 
-- **Performance Range**: 8.6x difference between fastest and slowest
-- **Best**: dict (63ns, 15.9M ops/sec)
+- **Range**: 9.7× between fastest and slowest (median)
+- **Best**: dict (69 ns, 14.5M ops/sec)
 
-|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
-| :---: | :---: | :---: | :---: | :---: | :---: |
-|dict|63|4|15.9M|822|6.6%|
-|cachebox.Cache|71|2|14.1M|865|3.2%|
-|cachebox.RRCache|72|3|13.8M|819|4.2%|
-|cachebox.FIFOCache|82|3|12.1M|848|3.5%|
-|lru.LRU|88|4|11.3M|829|4.8%|
-|cachebox.LRUCache|99|8|10.1M|817|8.4%|
-|cachebox.LFUCache|101|8|9.9M|804|8.1%|
-|cachebox.TTLCache|108|5|9.3M|886|4.3%|
-|cachebox.VTTLCache|128|9|7.8M|816|7.3%|
-|cachetools.Cache|162|10|6.2M|930|6.0%|
-|cacheing.LRUCache|199|12|5.0M|926|5.8%|
-|cachetools.FIFOCache|236|12|4.2M|900|5.0%|
-|cachetools.LRUCache|238|15|4.2M|948|6.1%|
-|cacheing.LFUCache|259|15|3.9M|933|5.8%|
-|cachetools.LFUCache|270|16|3.7M|853|6.1%|
-|cacheing.RandomCache|288|34|3.5M|913|11.9%|
-|cachetools.RRCache|318|39|3.1M|937|12.3%|
-|moka_py.Moka|467|82|2.1M|889|17.5%|
-|moka_py.Moka (lru)|468|76|2.1M|878|16.2%|
-|cachetools.TTLCache|510|18|2.0M|877|3.5%|
-|cacheing.TTLCache|539|26|1.9M|878|4.7%|
+|    Implementation    | Median (ns) | Mean (ns) | Stdev | MAD | Ops/sec | Samples |    CV |
+| :------------------: | ----------: | --------: | ----: | --: | ------: | ------: | ----: |
+|         dict         |        68.9 |      69.2 |   1.7 | 0.6 |   14.5M |     200 |  2.5% |
+|    cachebox.Cache    |        73.7 |      74.4 |   6.4 | 0.8 |   13.4M |     200 |  8.6% |
+|   cachebox.RRCache   |        74.7 |      76.0 |   8.0 | 0.9 |   13.2M |     200 | 10.6% |
+|  cachebox.FIFOCache  |        83.2 |      83.4 |   1.5 | 0.7 |   12.0M |     200 |  1.8% |
+|  cachebox.LRUCache   |        87.6 |      87.8 |   2.2 | 1.0 |   11.4M |     200 |  2.5% |
+|  cachebox.LFUCache   |        97.2 |      98.5 |   9.9 | 0.8 |   10.2M |     200 | 10.1% |
+|       lru.LRU        |       105.6 |     106.1 |   4.4 | 0.8 |    9.4M |     200 |  4.1% |
+|  cachebox.TTLCache   |       107.4 |     107.7 |   1.9 | 0.8 |    9.3M |     200 |  1.8% |
+|  cachebox.VTTLCache  |       117.8 |     118.6 |   3.8 | 1.0 |    8.4M |     156 |  3.2% |
+|   cachetools.Cache   |       168.2 |     168.4 |   2.0 | 0.8 |    5.9M |     200 |  1.2% |
+|  cacheing.LRUCache   |       217.8 |     220.6 |  20.2 | 0.9 |    4.5M |     200 |  9.2% |
+| cachetools.FIFOCache |       260.3 |     262.3 |  12.0 | 0.9 |    3.8M |     200 |  4.6% |
+| cachetools.LRUCache  |       260.5 |     261.2 |   5.7 | 0.8 |    3.8M |     200 |  2.2% |
+| cachetools.LFUCache  |       290.4 |     292.3 |  12.0 | 0.9 |    3.4M |     200 |  4.1% |
+|  cacheing.LFUCache   |       300.5 |     303.8 |  24.1 | 1.3 |    3.3M |     200 |  7.9% |
+| cacheing.RandomCache |       331.8 |     338.5 |  16.7 | 1.7 |    3.0M |     200 |  4.9% |
+|  cachetools.RRCache  |       344.7 |     346.3 |  11.8 | 1.3 |    2.9M |     200 |  3.4% |
+| cachetools.TTLCache  |       559.6 |     561.3 |   7.5 | 1.4 |    1.8M |     200 |  1.3% |
+|  cacheing.TTLCache   |       573.8 |     582.9 |  40.7 | 4.6 |    1.7M |     200 |  7.0% |
+|  moka_py.Moka (lru)  |       662.7 |     664.7 |  10.0 | 2.0 |    1.5M |     121 |  1.5% |
+|     moka_py.Moka     |       667.2 |     685.1 |  63.0 | 6.4 |    1.5M |     200 |  9.2% |
 
 ## 📊 Popitem
 
+Call popitem() on a cache filled to maxsize (the eviction primitive).
 
 ![popitem](photos/popitem.png)
 
-- **Performance Range**: 3972.9x difference between fastest and slowest
-- **Best**: cachebox.TTLCache (893ns, 1.1M ops/sec)
+- **Range**: 23.5× between fastest and slowest (median)
+- **Best**: cachebox.FIFOCache (85 ns, 11.7M ops/sec)
 
-|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
-| :---: | :---: | :---: | :---: | :---: | :---: |
-|cachebox.TTLCache|893|204|1.1M|973|22.8%|
-|cachebox.FIFOCache|918|187|1.1M|970|20.4%|
-|lru.LRU|989|129|1.0M|930|13.0%|
-|cachebox.LRUCache|1,073|111|0.9M|881|10.4%|
-|cacheing.LRUCache|1,387|178|0.7M|955|12.8%|
-|cachetools.FIFOCache|1,906|246|0.5M|951|12.9%|
-|cacheing.LFUCache|1,984|300|0.5M|971|15.1%|
-|cachetools.LRUCache|2,090|287|0.5M|979|13.7%|
-|cacheing.TTLCache|2,095|299|0.5M|952|14.3%|
-|cacheing.RandomCache|2,799|403|0.4M|963|14.4%|
-|cachetools.RRCache|3,052|383|0.3M|968|12.5%|
-|cachebox.RRCache|7,212|3,757|0.1M|998|52.1%|
-|cachetools.LFUCache|16,119|242|0.1M|894|1.5%|
-|cachebox.LFUCache|31,176|848|0.0M|911|2.7%|
-|cachebox.VTTLCache|37,553|958|0.0M|922|2.6%|
-|cachetools.TTLCache|3,548,048|162,835|0.0M|747|4.6%|
+|    Implementation    | Median (ns) | Mean (ns) | Stdev |  MAD | Ops/sec | Samples |    CV |
+| :------------------: | ----------: | --------: | ----: | ---: | ------: | ------: | ----: |
+|  cachebox.FIFOCache  |        84.9 |      85.5 |   5.9 |  1.2 |   11.7M |     200 |  6.9% |
+|  cachebox.TTLCache   |        94.9 |      95.9 |   8.2 |  1.2 |   10.4M |     200 |  8.5% |
+|  cachebox.LRUCache   |        95.9 |      96.1 |   2.1 |  0.9 |   10.4M |     200 |  2.1% |
+|  cachebox.LFUCache   |        97.4 |      99.3 |  12.0 |  1.2 |   10.1M |     200 | 12.1% |
+|  cachebox.VTTLCache  |       108.9 |     110.9 |   9.4 |  1.4 |    9.0M |     176 |  8.5% |
+|       lru.LRU        |       129.8 |     130.3 |   5.4 |  0.9 |    7.7M |     200 |  4.1% |
+|  cacheing.LRUCache   |       230.0 |     230.9 |   7.4 |  1.2 |    4.3M |     200 |  3.2% |
+|  cacheing.TTLCache   |       343.5 |     347.2 |  56.4 |  2.8 |    2.9M |     200 | 16.2% |
+|  cacheing.LFUCache   |       348.6 |     351.0 |  14.0 |  1.9 |    2.8M |     200 |  4.0% |
+| cachetools.FIFOCache |       493.7 |     497.1 |  15.0 |  1.9 |    2.0M |     200 |  3.0% |
+| cacheing.RandomCache |       637.3 |     660.2 |  49.6 | 13.1 |    1.5M |     141 |  7.5% |
+| cachetools.LRUCache  |       650.1 |     658.2 |  40.5 |  2.3 |    1.5M |     200 |  6.2% |
+|   cachebox.RRCache   |       703.8 |     712.2 |  39.4 |  7.5 |    1.4M |     200 |  5.5% |
+|  cachetools.RRCache  |       727.7 |     740.4 |  63.2 |  6.7 |    1.4M |     172 |  8.5% |
+| cachetools.TTLCache  |     1,786.9 |   1,812.9 |  69.3 | 24.8 |    0.6M |     122 |  3.8% |
+| cachetools.LFUCache  |     1,995.1 |   2,010.2 |  65.8 | 33.9 |    0.5M |     196 |  3.3% |
 
-## 📊 Hash Collision
+Skipped: `dict` (no eviction policy), `cachebox.Cache` (no eviction policy), `cachetools.Cache` (no eviction policy), `moka_py.Moka` (no popitem), `moka_py.Moka (lru)` (no popitem)
 
+## 📊 Hash collision
 
-![hash_collision](photos/hash_collision.png)
+Look up keys that all hash to the same value (hash() == 42).
 
-- **Performance Range**: 7.3x difference between fastest and slowest
-- **Best**: cachebox.Cache (3838ns, 0.3M ops/sec)
+![collision](photos/collision.png)
 
-|Implementation|Mean (ns)|Std Dev (ns)|Ops/sec|Samples|Stability|
-| :---: | :---: | :---: | :---: | :---: | :---: |
-|cachebox.Cache|3,838|2,129|0.3M|1000|55.5%|
-|cachebox.RRCache|3,894|2,142|0.3M|994|55.0%|
-|cachebox.VTTLCache|4,181|2,296|0.2M|989|54.9%|
-|cachebox.LRUCache|4,206|2,350|0.2M|980|55.9%|
-|cachebox.LFUCache|4,279|2,362|0.2M|990|55.2%|
-|lru.LRU|4,434|2,446|0.2M|960|55.2%|
-|cacheing.RandomCache|4,494|2,451|0.2M|999|54.5%|
-|dict|4,514|2,466|0.2M|1000|54.6%|
-|cachebox.FIFOCache|4,537|2,519|0.2M|1000|55.5%|
-|cachebox.TTLCache|4,625|2,626|0.2M|989|56.8%|
-|moka_py.Moka (lru)|6,532|3,512|0.2M|999|53.8%|
-|moka_py.Moka|6,588|3,495|0.2M|986|53.1%|
-|cachetools.FIFOCache|8,858|4,887|0.1M|999|55.2%|
-|cachetools.RRCache|8,911|4,946|0.1M|1000|55.5%|
-|cachetools.Cache|8,935|4,965|0.1M|999|55.6%|
-|cacheing.LRUCache|8,936|4,924|0.1M|1000|55.1%|
-|cacheing.TTLCache|9,413|4,898|0.1M|984|52.0%|
-|cachetools.LRUCache|17,836|9,988|0.1M|997|56.0%|
-|cachetools.TTLCache|18,490|9,945|0.1M|993|53.8%|
-|cacheing.LFUCache|23,930|13,365|0.0M|997|55.8%|
-|cachetools.LFUCache|28,031|15,270|0.0M|998|54.5%|
+- **Range**: 6.9× between fastest and slowest (median)
+- **Best**: cachebox.RRCache (1010 ns, 1.0M ops/sec)
+
+|    Implementation    | Median (ns) | Mean (ns) | Stdev |  MAD | Ops/sec | Samples |   CV |
+| :------------------: | ----------: | --------: | ----: | ---: | ------: | ------: | ---: |
+|   cachebox.RRCache   |     1,009.8 |   1,018.3 |  17.3 |  8.1 |    1.0M |      25 | 1.7% |
+|    cachebox.Cache    |     1,021.1 |   1,020.8 |  20.5 | 12.2 |    1.0M |      25 | 2.0% |
+|  cachebox.LFUCache   |     1,048.9 |   1,056.2 |  16.7 | 10.7 |    0.9M |      25 | 1.6% |
+|  cachebox.VTTLCache  |     1,068.9 |   1,063.3 |  18.2 | 10.0 |    0.9M |      25 | 1.7% |
+|  cachebox.LRUCache   |     1,076.5 |   1,068.3 |  21.5 |  7.8 |    0.9M |      25 | 2.0% |
+| cacheing.RandomCache |     1,179.2 |   1,184.9 |  15.0 |  0.7 |    0.8M |      25 | 1.3% |
+|         dict         |     1,179.3 |   1,173.3 |  20.0 | 18.5 |    0.9M |      25 | 1.7% |
+|  cachebox.FIFOCache  |     1,203.0 |   1,195.0 |  23.5 | 17.9 |    0.8M |      25 | 2.0% |
+|  cachebox.TTLCache   |     1,217.7 |   1,216.1 |  17.8 | 18.2 |    0.8M |      25 | 1.5% |
+|       lru.LRU        |     1,248.0 |   1,239.2 |  18.9 | 14.8 |    0.8M |      25 | 1.5% |
+|     moka_py.Moka     |     2,040.4 |   2,042.3 |   6.9 |  2.0 |    0.5M |      25 | 0.3% |
+|  moka_py.Moka (lru)  |     2,047.2 |   2,048.9 |   9.6 |  1.5 |    0.5M |      25 | 0.5% |
+| cachetools.FIFOCache |     2,320.3 |   2,338.7 |  35.7 |  3.0 |    0.4M |      25 | 1.5% |
+|  cachetools.RRCache  |     2,323.9 |   2,336.4 |  23.3 |  7.5 |    0.4M |      25 | 1.0% |
+|   cachetools.Cache   |     2,324.7 |   2,335.8 |  25.5 |  5.4 |    0.4M |      25 | 1.1% |
+|  cacheing.LRUCache   |     2,366.3 |   2,387.0 |  33.2 | 11.6 |    0.4M |      25 | 1.4% |
+|  cacheing.TTLCache   |     2,928.7 |   2,921.8 |  44.2 | 42.2 |    0.3M |      25 | 1.5% |
+| cachetools.LRUCache  |     4,698.1 |   4,730.9 |  57.3 | 14.1 |    0.2M |      25 | 1.2% |
+|  cacheing.LFUCache   |     5,303.0 |   5,337.7 |  63.8 | 13.2 |    0.2M |      25 | 1.2% |
+| cachetools.TTLCache  |     5,367.8 |   5,413.9 |  93.6 |  5.1 |    0.2M |      25 | 1.7% |
+| cachetools.LFUCache  |     6,987.7 |   7,029.0 |  77.3 |  8.9 |    0.1M |      25 | 1.1% |
 
 ## 🚀 Usage
 
-
 ### Prerequisites
+
 ```bash
 uv sync
 ```
 
 ### Run Benchmarks
-```bash
-# All benchmarks
-python main.py
 
-# Specific benchmark
-python main.py insertion
-python main.py lookup_existing
+```bash
+# All cases (in-process)
+python -m cachebox_benchmark
+
+# One or more cases
+python -m cachebox_benchmark get_hit delete
+
+# Faster iteration (not for published numbers)
+python -m cachebox_benchmark --fast
+
+# One subprocess per (case, implementation)
+python -m cachebox_benchmark --isolated
+
+# JSON + regenerate README from a previous run
+python -m cachebox_benchmark --json results.json
+python -m cachebox_benchmark --report-only results.json
 ```
+
+Optional host knobs (off by default): `--pin-cpu 0`, `--nice`.
 
 ### Understanding Results
 
-- **🟢 Excellent (A+)**: <2% noise ratio - Highly reliable measurements
-- **🟡 Good (A-B)**: 2-10% noise ratio - Acceptable reliability
-- **🔴 Poor (C-D)**: >10% noise ratio - Less reliable measurements
-
-**Performance Metrics**:
-- **Mean (ns)**: Average execution time in nanoseconds
-- **Ops/sec**: Operations per second (throughput)
-- **Stability**: Measurement consistency (lower noise = more stable)
+- **Median (ns)**: robust typical cost per operation; tables are sorted by this.
+- **Mean / Stdev / MAD**: distribution; MAD is median absolute deviation.
+- **Ops/sec**: throughput from the mean.
+- **CV**: stdev / mean. High CV means the number is noisy, not that the library is “bad”.

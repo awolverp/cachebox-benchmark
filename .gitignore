@@ -1,3 +1,6 @@
 /.venv
 __pycache__
 /backup
+*.tmp
+results.json
+README.md.backup
