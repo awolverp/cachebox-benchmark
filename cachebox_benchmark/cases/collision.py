@@ -26,8 +26,8 @@ def prepare(impl: Impl) -> Prepared:
         for key in keys:
             set_(cache, key, int(key))
         present = [key for key in keys if get(cache, key) is not None]
-        if not present:
-            raise ProbeError("no colliding keys present after populate")
+        if len(present) < len(keys):
+            raise ProbeError(f"keeps {len(present)} of {len(keys)} colliding keys")
         return cache, present
 
     def run(state, loops: int) -> None:
