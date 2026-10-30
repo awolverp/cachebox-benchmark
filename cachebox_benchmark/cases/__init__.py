@@ -5,6 +5,7 @@ from cachebox_benchmark.cases.collision import CASE as collision
 from cachebox_benchmark.cases.delete import CASE as delete
 from cachebox_benchmark.cases.get_hit import CASE as get_hit
 from cachebox_benchmark.cases.get_miss import CASE as get_miss
+from cachebox_benchmark.cases.iterate import CASE as iterate
 from cachebox_benchmark.cases.popitem import CASE as popitem
 from cachebox_benchmark.cases.set_evict import CASE as set_evict
 from cachebox_benchmark.cases.set_new import CASE as set_new
@@ -17,6 +18,7 @@ CASES: tuple[Case, ...] = (
     delete,
     popitem,
     collision,
+    iterate,
 )
 CASE_BY_NAME: dict[str, Case] = {case.name: case for case in CASES}
 

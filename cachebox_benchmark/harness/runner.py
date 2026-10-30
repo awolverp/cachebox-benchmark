@@ -93,7 +93,7 @@ def measure(
         return elapsed / loops
 
     try:
-        cal_loops = 8
+        cal_loops = max(8, prepared.min_loops or 0)
         if prepared.max_loops is not None:
             cal_loops = max(1, min(cal_loops, prepared.max_loops))
 

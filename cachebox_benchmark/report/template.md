@@ -12,7 +12,7 @@ If you know other library, tell me to add it to this page.
 
 ## Methodology
 
-Times are **from Python**: each sample is a calibrated inner loop around a single API call (`set` / `get` / `delete` / `popitem`). Setup and teardown are not timed. GC is collected before each sample and disabled during the timed region.
+Times are **from Python**: each sample is a calibrated inner loop around a single API call (`set` / `get` / `delete` / `popitem`, or one entry of an `items()` iteration). Setup and teardown are not timed. GC is collected before each sample and disabled during the timed region.
 
 Reported values are the **median** ns/op (tables ranked by median), plus mean, stdev, MAD, ops/sec, sample count, and coefficient of variation. Outliers are **not** dropped. A result is flagged when CV > 10% or max > 1.5× mean.
 
@@ -27,6 +27,7 @@ All implementations use the same working set (`maxsize = 4096`, integer keys/val
 | Deletion | Delete present keys (one delete per populated key, then a new cache). |
 | Popitem | `popitem()` on a cache filled to maxsize. |
 | Hash collision | `get` of keys whose `hash()` is always 42. |
+| Iterate items | `for k, v in cache.items()` over a cache filled to maxsize; time is per entry. |
 
 moka-py is a concurrent Rust cache measured **single-threaded** like the others.
 
