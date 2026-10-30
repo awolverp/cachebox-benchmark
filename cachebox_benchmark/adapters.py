@@ -52,6 +52,18 @@ def moka_delete(cache: Any, key: Any) -> None:
     cache.remove(key)
 
 
+def theine_set(cache: Any, key: Any, value: Any) -> None:
+    cache.set(key, value)
+
+
+def theine_get(cache: Any, key: Any) -> Any:
+    return cache.get(key)[0]
+
+
+def theine_delete(cache: Any, key: Any) -> None:
+    cache.delete(key)
+
+
 def mapping(
     *,
     id: str,

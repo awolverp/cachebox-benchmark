@@ -5,8 +5,18 @@ import cacheing
 import cachetools
 import lru
 import moka_py
+import theine
 
-from cachebox_benchmark.adapters import Impl, mapping, moka_delete, moka_get, moka_set
+from cachebox_benchmark.adapters import (
+    Impl,
+    mapping,
+    moka_delete,
+    moka_get,
+    moka_set,
+    theine_delete,
+    theine_get,
+    theine_set,
+)
 from cachebox_benchmark.config import TTL_SECONDS
 
 
@@ -191,6 +201,18 @@ def build_impls() -> tuple[Impl, ...]:
             set=moka_set,
             get=moka_get,
             delete=moka_delete,
+            popitem=None,
+            bounded=True,
+            has_eviction_policy=True,
+            supports_popitem=False,
+        ),
+        Impl(
+            id="theine.Cache",
+            family="theine",
+            factory=lambda n: theine.Cache(n),
+            set=theine_set,
+            get=theine_get,
+            delete=theine_delete,
             popitem=None,
             bounded=True,
             has_eviction_policy=True,

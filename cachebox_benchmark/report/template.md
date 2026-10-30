@@ -28,7 +28,7 @@ All implementations use the same working set (`maxsize = 4096`, integer keys/val
 | Popitem | `popitem()` on a cache filled to maxsize. |
 | Hash collision | `get` of keys whose `hash()` is always 42. |
 
-moka-py is a concurrent Rust cache measured **single-threaded** like the others.
+moka-py and theine are thread-safe caches measured **single-threaded** like the others.
 
 ## 🖥️ System Information
 

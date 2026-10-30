@@ -16,6 +16,7 @@ _VERSION_PACKAGES = (
     "cacheing",
     "lru-dict",
     "moka-py",
+    "theine",
     "matplotlib",
     "matplotx",
 )
