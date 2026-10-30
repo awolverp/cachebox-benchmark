@@ -28,6 +28,20 @@ def _moka_lru(maxsize: int):
     return moka_py.Moka(maxsize, policy="lru")
 
 
+_theine_live: list[theine.Cache] = []
+
+
+def _theine(maxsize: int):
+    # theine frees a cache only after close(): its maintenance task holds a reference.
+    # ponytail: the harness uses one cache at a time, so close the previous one;
+    # an Impl.close hook is the upgrade if two caches ever need to live at once.
+    while _theine_live:
+        _theine_live.pop().close()
+    cache = theine.Cache(maxsize)
+    _theine_live.append(cache)
+    return cache
+
+
 def build_impls() -> tuple[Impl, ...]:
     return (
         mapping(
@@ -209,7 +223,7 @@ def build_impls() -> tuple[Impl, ...]:
         Impl(
             id="theine.Cache",
             family="theine",
-            factory=lambda n: theine.Cache(n),
+            factory=_theine,
             set=theine_set,
             get=theine_get,
             delete=theine_delete,
