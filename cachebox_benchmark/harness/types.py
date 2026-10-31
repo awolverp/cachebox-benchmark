@@ -18,6 +18,7 @@ class Prepared:
     teardown: Callable[[Any], None] | None = None
     max_loops: int | None = None
     probe: Callable[[], None] | None = None
+    min_loops: int | None = None
 
 
 @dataclass
